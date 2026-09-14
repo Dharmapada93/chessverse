@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Copy, Crown, MessageCircle, Users } from "lucide-react";
+import ChessGame from "@/components/chess/ChessGame";
 
 const spectators = [
   { name: "Priya", rating: 1512, online: true, isHost: true },
@@ -72,8 +73,8 @@ export default function ChessRoomPage() {
           </div>
 
           {/* Board */}
-          <div className="mx-auto aspect-square w-full max-w-[720px] overflow-hidden rounded-xl border border-white/10 shadow-2xl">
-            <ChessBoard />
+          <div className="mx-auto w-full max-w-[720px]">
+            <ChessGame />
           </div>
 
           {/* Player bottom */}
@@ -159,47 +160,5 @@ export default function ChessRoomPage() {
         </section>
       </div>
     </main>
-  );
-}
-
-function ChessBoard() {
-  const pieces = [
-    ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"],
-    ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
-    ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["", "", "", "", "", "", "", ""],
-    ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
-    ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"],
-  ];
-
-  return (
-    <div className="grid h-full w-full grid-cols-8">
-      {pieces.flatMap((row, rowIndex) =>
-        row.map((piece, colIndex) => {
-          const dark = (rowIndex + colIndex) % 2 === 1;
-
-          return (
-            <div
-              key={`${rowIndex}-${colIndex}`}
-              className={`flex aspect-square items-center justify-center text-[clamp(1.8rem,6vw,4.5rem)] ${
-                dark ? "bg-[#8f7651]" : "bg-[#e7d8b8]"
-              }`}
-            >
-              <span
-                className={
-                  rowIndex < 2
-                    ? "text-[#171512] drop-shadow-[0_2px_1px_rgba(255,255,255,0.15)]"
-                    : "text-[#f8f4e9] drop-shadow-[0_2px_1px_rgba(0,0,0,0.4)]"
-                }
-              >
-                {piece}
-              </span>
-            </div>
-          );
-        }),
-      )}
-    </div>
   );
 }
