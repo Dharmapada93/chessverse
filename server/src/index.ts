@@ -6,6 +6,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 
 import { connectDatabase } from "./config/database.js";
+import authRoutes from "./routes/auth.js";
 import roomRoutes from "./routes/rooms.js";
 import { registerSocketHandlers } from "./socket/socket.js";
 
@@ -25,6 +26,7 @@ app.use(
 
 app.use(express.json());
 
+app.use("/api/auth", authRoutes);
 app.use("/api/rooms", roomRoutes);
 
 app.get("/api/health", (_req, res) => {
