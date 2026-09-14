@@ -5,6 +5,11 @@ import { User } from "../models/User.js";
 import { requireAuth } from "../middleware/auth.js";
 import type { AuthRequest } from "../middleware/auth.js";
 import { createNotification } from "../services/notification.js";
+import { createPrivateRoom } from "../services/room.js";
+import {
+  createGameForRoom,
+  assignPlayerToGame,
+} from "../services/game.js";
 
 const router = Router();
 
@@ -165,6 +170,35 @@ router.post(
     challenge.status =
       "accepted";
 
+    const room =
+      await createPrivateRoom(
+        "Chess Challenge",
+        challenge.timeControl.minutes,
+        challenge.timeControl.increment,
+        challenge.challengerId,
+      );
+
+    const game =
+      await createGameForRoom(
+        room._id.toString(),
+      );
+
+    await assignPlayerToGame(
+      game._id.toString(),
+      challenge.challengerId,
+    );
+
+    await assignPlayerToGame(
+      game._id.toString(),
+      challenge.challengedId,
+    );
+
+    challenge.roomId =
+      room._id.toString();
+
+    challenge.gameId =
+      game._id.toString();
+
     await challenge.save();
 
     await createNotification({
@@ -186,7 +220,17 @@ router.post(
 
     return res.json({
       success: true,
+
       challenge,
+
+      room: {
+        id: room._id,
+        code: room.code,
+      },
+
+      game: {
+        id: game._id,
+      },
     });
   },
 );
