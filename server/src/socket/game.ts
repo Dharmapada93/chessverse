@@ -166,21 +166,23 @@ export async function persistGame(
     san: string;
   },
 ) {
-  let game = await Game.findOne({
-    roomId,
-  });
+  const game =
+    await Game.findOne({
+      roomId,
+      status: {
+        $in: [
+          "waiting",
+          "playing",
+        ],
+      },
+    });
 
   if (!game) {
-    game = await Game.create({
-      roomId,
-      initialFen: new Chess().fen(),
-      currentFen: chess.fen(),
-      status: "playing",
-      moves: [],
-    });
+    return;
   }
 
-  game.currentFen = chess.fen();
+  game.currentFen =
+    chess.fen();
 
   game.moves.push({
     from: move.from,

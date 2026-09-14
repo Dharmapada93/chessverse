@@ -24,6 +24,47 @@ export default function ChessGame({
   } | null>(null);
 
   useEffect(() => {
+    async function restoreGame() {
+      try {
+        const token =
+          localStorage.getItem(
+            "chessverse-token",
+          );
+
+        const response =
+          await fetch(
+            `http://localhost:4000/api/games/room/${roomId}/current`,
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${token}`,
+              },
+            },
+          );
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data =
+          await response.json();
+
+        if (data.success) {
+          setGame(
+            new Chess(
+              data.game.currentFen,
+            ),
+          );
+        }
+      } catch {
+        // Keep the local game state.
+      }
+    }
+
+    restoreGame();
+  }, [roomId]);
+
+  useEffect(() => {
     function handleGameJoined(data: {
       fen: string;
       turn: "white" | "black";

@@ -50,6 +50,50 @@ router.get(
 );
 
 router.get(
+  "/room/:roomId/current",
+  requireAuth,
+  async (
+    req: AuthRequest,
+    res,
+  ) => {
+    try {
+      const game =
+        await Game.findOne({
+          roomId:
+            req.params.roomId,
+          status: {
+            $in: [
+              "waiting",
+              "playing",
+            ],
+          },
+        }).sort({
+          createdAt: -1,
+        });
+
+      if (!game) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "No active game found",
+        });
+      }
+
+      return res.json({
+        success: true,
+        game,
+      });
+    } catch {
+      return res.status(500).json({
+        success: false,
+        message:
+          "Failed to load current game",
+      });
+    }
+  },
+);
+
+router.get(
   "/:id",
   requireAuth,
   async (
