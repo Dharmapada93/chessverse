@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "ChessVerse — Play. Watch. Connect.",
   description:
-    "A social multiplayer chess platform for playing with friends, watching live matches, and competing together.",
+    "A social multiplayer chess platform where friends play, spectators watch, and everyone stays connected.",
 };
 
 export default function RootLayout({
@@ -14,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={GeistSans.className}>{children}</body>
     </html>
   );
 }
