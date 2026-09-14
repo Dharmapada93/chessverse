@@ -3,6 +3,7 @@ import {
   addPlayer,
   getGame,
   makeMove,
+  persistGame,
   removePlayer,
 } from "./game.js";
 import {
@@ -111,7 +112,7 @@ export function registerSocketHandlers(io: Server) {
 
     socket.on(
       "game:move",
-      ({
+      async ({
         roomId,
         from,
         to,
@@ -135,6 +136,16 @@ export function registerSocketHandlers(io: Server) {
             error: result.error,
           });
           return;
+        }
+
+        const game = getGame(roomId);
+        if (game && result.move) {
+          await persistGame(roomId, game.chess, {
+            from,
+            to,
+            promotion,
+            san: result.move.san,
+          });
         }
 
         if (result.turn) {

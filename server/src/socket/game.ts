@@ -1,4 +1,5 @@
 import { Chess } from "chess.js";
+import { Game } from "../models/Game.js";
 
 type GamePlayer = {
   socketId: string;
@@ -142,4 +143,42 @@ export function makeMove(
       error: "Illegal move",
     };
   }
+}
+
+export async function persistGame(
+  roomId: string,
+  chess: Chess,
+  move: {
+    from: string;
+    to: string;
+    promotion?: string;
+    san: string;
+  },
+) {
+  let game = await Game.findOne({
+    roomId,
+  });
+
+  if (!game) {
+    game = await Game.create({
+      roomId,
+      initialFen: new Chess().fen(),
+      currentFen: chess.fen(),
+      status: "playing",
+      moves: [],
+    });
+  }
+
+  game.currentFen = chess.fen();
+
+  game.moves.push({
+    from: move.from,
+    to: move.to,
+    promotion: move.promotion,
+    san: move.san,
+    fen: chess.fen(),
+    createdAt: new Date(),
+  });
+
+  await game.save();
 }
