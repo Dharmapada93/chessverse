@@ -12,6 +12,7 @@ import {
   startClock,
   switchClock,
 } from "./clock.js";
+import { User } from "../models/User.js";
 
 type RoomPlayer = {
   socketId: string;
@@ -37,38 +38,64 @@ export function registerSocketHandlers(io: Server) {
 
     socket.on(
       "room:join",
-      ({
+      async ({
         roomId,
-        name,
         role,
       }: {
         roomId: string;
-        name: string;
         role: "player" | "spectator";
       }) => {
+        const user =
+          await User.findById(
+            socket.data.userId,
+          );
+
+        if (!user) {
+          return;
+        }
+
         socket.join(roomId);
 
-        const players = roomPlayers.get(roomId) ?? [];
+        const players =
+          roomPlayers.get(roomId) ?? [];
 
         players.push({
           socketId: socket.id,
-          name,
+          name: user.username,
           role,
         });
 
-        roomPlayers.set(roomId, players);
-
-        io.to(roomId).emit("room:members", {
-          members: players,
-        });
-
-        socket.emit("room:joined", {
+        roomPlayers.set(
           roomId,
-          role,
-        });
+          players,
+        );
+
+        io.to(roomId).emit(
+          "room:members",
+          {
+            members: players,
+          },
+        );
+
+        socket.emit(
+          "room:joined",
+          {
+            roomId,
+            role,
+            user: {
+              id: user._id,
+              username: user.username,
+              rating: user.rating,
+            },
+          },
+        );
 
         if (role === "player") {
-          const game = addPlayer(roomId, socket.id);
+          const game = addPlayer(roomId, socket.id, {
+            userId: user._id.toString(),
+            name: user.username,
+            rating: user.rating,
+          });
 
           if (game.players.length === 2) {
             createClock(roomId, 5, 3);
@@ -106,7 +133,7 @@ export function registerSocketHandlers(io: Server) {
           }
         }
 
-        console.log(`${name} joined ${roomId} as ${role}`);
+        console.log(`${user.username} joined ${roomId} as ${role}`);
       },
     );
 

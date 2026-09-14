@@ -13,7 +13,6 @@ export default function RoomClient({
 }: RoomClientProps) {
   useRoomSocket({
     roomId,
-    name: "You",
     role,
   });
 

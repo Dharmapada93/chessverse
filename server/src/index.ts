@@ -4,6 +4,7 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
+import jwt from "jsonwebtoken";
 
 import { connectDatabase } from "./config/database.js";
 import authRoutes from "./routes/auth.js";
@@ -42,6 +43,51 @@ const io = new Server(httpServer, {
     origin: CLIENT_URL,
     credentials: true,
   },
+});
+
+io.use((socket, next) => {
+  const token =
+    socket.handshake.auth?.token;
+
+  if (!token) {
+    return next(
+      new Error(
+        "Authentication required",
+      ),
+    );
+  }
+
+  const secret =
+    process.env.JWT_SECRET;
+
+  if (!secret) {
+    return next(
+      new Error(
+        "JWT secret not configured",
+      ),
+    );
+  }
+
+  try {
+    const payload =
+      jwt.verify(
+        token,
+        secret,
+      ) as {
+        userId: string;
+      };
+
+    socket.data.userId =
+      payload.userId;
+
+    next();
+  } catch {
+    next(
+      new Error(
+        "Invalid authentication token",
+      ),
+    );
+  }
 });
 
 registerSocketHandlers(io);

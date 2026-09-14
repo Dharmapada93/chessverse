@@ -1,8 +1,11 @@
 import { Chess } from "chess.js";
 import { Game } from "../models/Game.js";
 
-type GamePlayer = {
+export type GamePlayer = {
   socketId: string;
+  userId: string;
+  name: string;
+  rating: number;
   color: "white" | "black";
 };
 
@@ -31,6 +34,11 @@ export function getGame(roomId: string) {
 export function addPlayer(
   roomId: string,
   socketId: string,
+  user: {
+    userId: string;
+    name: string;
+    rating: number;
+  },
 ) {
   const game = createGame(roomId);
 
@@ -51,6 +59,9 @@ export function addPlayer(
 
   game.players.push({
     socketId,
+    userId: user.userId,
+    name: user.name,
+    rating: user.rating,
     color,
   });
 

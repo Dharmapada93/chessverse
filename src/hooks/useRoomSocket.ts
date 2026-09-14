@@ -3,17 +3,17 @@
 import { useEffect } from "react";
 import { socket } from "@/lib/socket";
 
-type RoomRole = "player" | "spectator";
+type RoomRole =
+  | "player"
+  | "spectator";
 
 type UseRoomSocketProps = {
   roomId: string;
-  name: string;
   role: RoomRole;
 };
 
 export function useRoomSocket({
   roomId,
-  name,
   role,
 }: UseRoomSocketProps) {
   useEffect(() => {
@@ -21,18 +21,23 @@ export function useRoomSocket({
       socket.connect();
     }
 
-    socket.emit("room:join", {
-      roomId,
-      name,
-      role,
-    });
+    socket.emit(
+      "room:join",
+      {
+        roomId,
+        role,
+      },
+    );
 
     return () => {
-      socket.emit("room:leave", {
-        roomId,
-      });
+      socket.emit(
+        "room:leave",
+        {
+          roomId,
+        },
+      );
 
       socket.disconnect();
     };
-  }, [roomId, name, role]);
+  }, [roomId, role]);
 }

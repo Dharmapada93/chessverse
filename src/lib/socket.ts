@@ -6,4 +6,12 @@ const SOCKET_URL =
 
 export const socket = io(SOCKET_URL, {
   autoConnect: false,
+  auth: {
+    token:
+      typeof window !== "undefined"
+        ? localStorage.getItem(
+            "chessverse-token",
+          )
+        : null,
+  },
 });

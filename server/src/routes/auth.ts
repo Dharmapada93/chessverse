@@ -2,6 +2,10 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.js";
+import {
+  requireAuth,
+  type AuthRequest,
+} from "../middleware/auth.js";
 
 const router = Router();
 
@@ -147,5 +151,33 @@ router.post("/login", async (req, res) => {
     });
   }
 });
+
+router.get(
+  "/me",
+  requireAuth,
+  async (
+    req: AuthRequest,
+    res,
+  ) => {
+    const user =
+      await User.findById(
+        req.userId,
+      ).select(
+        "-passwordHash",
+      );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      user,
+    });
+  },
+);
 
 export default router;
