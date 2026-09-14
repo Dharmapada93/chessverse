@@ -7,6 +7,7 @@ import {
   Swords,
   Eye,
   Users,
+  Award,
   Trophy,
   Bot,
   Settings,
@@ -17,6 +18,7 @@ const navigation = [
   { label: "Play", href: "/play", icon: Swords },
   { label: "Watch", href: "/watch", icon: Eye },
   { label: "Friends", href: "/friends", icon: Users },
+  { label: "Leaderboard", href: "/leaderboard", icon: Award },
   { label: "Tournaments", href: "/tournaments", icon: Trophy },
   { label: "AI Coach", href: "/coach", icon: Bot },
 ];
