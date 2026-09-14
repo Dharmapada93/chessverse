@@ -25,7 +25,7 @@ export default async function ChessRoomPage({
 
   return (
     <>
-      <RoomClient roomId={roomId} />
+      <RoomClient roomId={roomId} role="player" />
       <main className="min-h-screen bg-[#0a0a0a] text-[#f4f1e9]">
       {/* Header */}
       <header className="flex h-16 items-center justify-between border-b border-white/8 px-6">
@@ -83,7 +83,7 @@ export default async function ChessRoomPage({
 
           {/* Board */}
           <div className="mx-auto w-full max-w-[720px]">
-            <ChessGame />
+            <ChessGame roomId={roomId} role="player" />
           </div>
 
           {/* Player bottom */}

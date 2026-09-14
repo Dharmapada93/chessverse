@@ -1,63 +1,180 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
+import { socket } from "@/lib/socket";
 
-export default function ChessGame() {
+type ChessGameProps = {
+  roomId: string;
+  role?: "player" | "spectator";
+};
+
+export default function ChessGame({
+  roomId,
+  role = "player",
+}: ChessGameProps) {
   const [game, setGame] = useState(() => new Chess());
-  const [status, setStatus] = useState("White to move");
+  const [status, setStatus] = useState("Waiting for players");
+  const [playerColor, setPlayerColor] = useState<"white" | "black" | null>(null);
+  const [clock, setClock] = useState<{
+    white: number;
+    black: number;
+    activeColor: "white" | "black" | null;
+  } | null>(null);
 
-  function makeMove(sourceSquare: string, targetSquare: string) {
-    try {
-      const newGame = new Chess(game.fen());
+  useEffect(() => {
+    function handleGameJoined(data: {
+      fen: string;
+      turn: "white" | "black";
+      color: "white" | "black" | null;
+    }) {
+      setGame(new Chess(data.fen));
+      if (data.color) {
+        setPlayerColor(data.color);
+        setStatus(
+          data.color === data.turn ? "Your turn" : "Opponent's turn",
+        );
+      } else {
+        setStatus("Spectator mode");
+      }
+    }
 
-      const moveResult = newGame.move({
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: "q", // auto-promote to queen for simplicity
-      });
-
-      if (!moveResult) return false;
-
+    function handleGameState(data: {
+      fen: string;
+      turn: "white" | "black";
+      isCheck: boolean;
+      isCheckmate: boolean;
+      isDraw: boolean;
+    }) {
+      const newGame = new Chess(data.fen);
       setGame(newGame);
 
-      if (newGame.isCheckmate()) {
+      if (data.isCheckmate) {
         setStatus(
-          newGame.turn() === "w"
+          data.turn === "white"
             ? "Black wins by checkmate"
             : "White wins by checkmate",
         );
-      } else if (newGame.isDraw()) {
+      } else if (data.isDraw) {
         setStatus("Game drawn");
-      } else if (newGame.inCheck()) {
+      } else if (data.isCheck) {
         setStatus(
-          newGame.turn() === "w"
+          data.turn === "white"
             ? "White is in check"
             : "Black is in check",
         );
       } else {
-        setStatus(
-          newGame.turn() === "w"
-            ? "White to move"
-            : "Black to move",
-        );
+        if (role === "spectator") {
+          setStatus(
+            data.turn === "white" ? "White to move" : "Black to move",
+          );
+        } else if (playerColor) {
+          setStatus(
+            playerColor === data.turn ? "Your turn" : "Opponent's turn",
+          );
+        } else {
+          setStatus(
+            data.turn === "white" ? "White to move" : "Black to move",
+          );
+        }
       }
+    }
 
-      return true;
-    } catch {
+    function handleRejected(data: { error: string }) {
+      setStatus(data.error);
+    }
+
+    function handleClockState(data: {
+      white: number;
+      black: number;
+      activeColor: "white" | "black" | null;
+    }) {
+      setClock(data);
+    }
+
+    socket.on("game:joined", handleGameJoined);
+    socket.on("game:state", handleGameState);
+    socket.on("game:moveRejected", handleRejected);
+    socket.on("clock:state", handleClockState);
+
+    return () => {
+      socket.off("game:joined", handleGameJoined);
+      socket.off("game:state", handleGameState);
+      socket.off("game:moveRejected", handleRejected);
+      socket.off("clock:state", handleClockState);
+    };
+  }, [playerColor, role]);
+
+  function makeMove(sourceSquare: string, targetSquare: string) {
+    if (role === "spectator") {
       return false;
     }
+
+    socket.emit("game:move", {
+      roomId,
+      from: sourceSquare,
+      to: targetSquare,
+      promotion: "q",
+    });
+
+    return true;
+  }
+
+  function formatTime(milliseconds: number) {
+    const totalSeconds = Math.ceil(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   }
 
   return (
     <div className="w-full">
       <div className="mb-3 flex items-center justify-between">
-        <p className="text-sm text-white/50">Live Match</p>
+        <div>
+          <p className="text-sm text-white/50">Live Match</p>
+          <p className="mt-1 text-xs text-white/35">
+            {role === "spectator"
+              ? "Spectator mode"
+              : playerColor
+                ? `Playing as ${playerColor}`
+                : "Joining game..."}
+          </p>
+        </div>
 
         <p className="text-sm font-medium text-[#d7b875]">
           {status}
         </p>
+      </div>
+
+      {/* Clocks */}
+      <div className="mb-3 grid grid-cols-2 gap-3">
+        <div
+          className={`rounded-xl border px-4 py-3 ${
+            clock?.activeColor === "black"
+              ? "border-[#d7b875]/40 bg-[#171714]"
+              : "border-white/10"
+          }`}
+        >
+          <p className="text-xs text-white/40">Black</p>
+          <p className="mt-1 text-2xl font-semibold">
+            {clock ? formatTime(clock.black) : "5:00"}
+          </p>
+        </div>
+
+        <div
+          className={`rounded-xl border px-4 py-3 ${
+            clock?.activeColor === "white"
+              ? "border-[#d7b875]/40 bg-[#171714]"
+              : "border-white/10"
+          }`}
+        >
+          <p className="text-xs text-white/40">White</p>
+          <p className="mt-1 text-2xl font-semibold">
+            {clock ? formatTime(clock.white) : "5:00"}
+          </p>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-white/10 shadow-2xl">
@@ -68,7 +185,8 @@ export default function ChessGame() {
               if (!targetSquare) return false;
               return makeMove(sourceSquare, targetSquare);
             },
-            boardOrientation: "white",
+            boardOrientation: playerColor === "black" ? "black" : "white",
+            allowDragging: role === "player",
             boardStyle: {
               borderRadius: "0px",
             },
@@ -82,19 +200,9 @@ export default function ChessGame() {
         />
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-xs text-white/35">
-        <span>Moves are validated locally</span>
-
-        <button
-          onClick={() => {
-            setGame(new Chess());
-            setStatus("White to move");
-          }}
-          className="rounded-lg border border-white/10 px-3 py-2 transition hover:bg-white/5 hover:text-white"
-        >
-          New game
-        </button>
-      </div>
+      <p className="mt-4 text-xs text-white/35">
+        Moves are validated by the ChessVerse server.
+      </p>
     </div>
   );
 }
