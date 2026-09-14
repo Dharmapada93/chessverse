@@ -5,6 +5,7 @@ import cors from "cors";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 
+import { connectDatabase } from "./config/database.js";
 import { registerSocketHandlers } from "./socket/socket.js";
 
 const app = express();
@@ -40,8 +41,14 @@ const io = new Server(httpServer, {
 
 registerSocketHandlers(io);
 
-httpServer.listen(PORT, () => {
-  console.log(
-    `ChessVerse server running on http://localhost:${PORT}`,
-  );
-});
+async function startServer() {
+  await connectDatabase();
+
+  httpServer.listen(PORT, () => {
+    console.log(
+      `ChessVerse server running on http://localhost:${PORT}`,
+    );
+  });
+}
+
+startServer();
