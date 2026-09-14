@@ -27,20 +27,44 @@ async function getProfile(
   }
 }
 
+async function getStats(
+  username: string,
+) {
+  try {
+    const response = await fetch(
+      `http://localhost:4000/api/users/${username}/stats`,
+      {
+        cache: "no-store",
+      },
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return response.json();
+  } catch {
+    return null;
+  }
+}
+
 export default async function ProfilePage({
   params,
 }: ProfilePageProps) {
   const { username } =
     await params;
 
-  const data =
-    await getProfile(username);
+  const [data, statsData] = await Promise.all([
+    getProfile(username),
+    getStats(username),
+  ]);
 
   if (!data?.user) {
     notFound();
   }
 
   const user = data.user;
+  const stats = statsData?.stats;
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] px-6 py-12 text-[#f4f1e9]">
@@ -70,7 +94,7 @@ export default async function ProfilePage({
                 Rating
               </p>
               <p className="mt-2 text-2xl font-semibold">
-                {user.rating}
+                {stats?.rating ?? user.rating}
               </p>
             </div>
 
@@ -79,7 +103,7 @@ export default async function ProfilePage({
                 Games
               </p>
               <p className="mt-2 text-2xl font-semibold">
-                —
+                {stats ? stats.games : "—"}
               </p>
             </div>
 
@@ -88,7 +112,7 @@ export default async function ProfilePage({
                 Wins
               </p>
               <p className="mt-2 text-2xl font-semibold">
-                —
+                {stats ? stats.wins : "—"}
               </p>
             </div>
 
@@ -97,7 +121,7 @@ export default async function ProfilePage({
                 Win Rate
               </p>
               <p className="mt-2 text-2xl font-semibold">
-                —
+                {stats ? `${stats.winRate}%` : "—"}
               </p>
             </div>
           </div>

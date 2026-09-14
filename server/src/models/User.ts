@@ -10,6 +10,12 @@ export interface IUser extends Document {
   passwordHash: string;
   avatar?: string;
   rating: number;
+  ratingHistory: {
+    rating: number;
+    change: number;
+    gameId?: string;
+    createdAt: Date;
+  }[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,6 +53,18 @@ const userSchema = new Schema<IUser>(
       type: Number,
       default: 1200,
     },
+
+    ratingHistory: [
+      {
+        rating: Number,
+        change: Number,
+        gameId: String,
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
