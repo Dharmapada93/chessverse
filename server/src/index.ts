@@ -11,6 +11,7 @@ import rateLimit from "express-rate-limit";
 
 import { connectDatabase } from "./config/database.js";
 import authRoutes from "./routes/auth.js";
+import challengeRoutes from "./routes/challenges.js";
 import gameRoutes from "./routes/games.js";
 import messageRoutes from "./routes/messages.js";
 import notificationRoutes from "./routes/notifications.js";
@@ -47,6 +48,7 @@ app.use(
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/challenges", challengeRoutes);
 app.use("/api/games", gameRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/notifications", notificationRoutes);
