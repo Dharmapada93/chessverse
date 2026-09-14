@@ -1,6 +1,7 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { z } from "zod";
 import { User } from "../models/User.js";
 import {
   requireAuth,
@@ -9,33 +10,49 @@ import {
 
 const router = Router();
 
+const registerSchema = z.object({
+  username: z
+    .string()
+    .min(3)
+    .max(30)
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      "Username can only contain letters, numbers and underscores",
+    ),
+
+  email: z
+    .string()
+    .email(),
+
+  password: z
+    .string()
+    .min(8)
+    .max(100),
+});
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
+
 router.post("/register", async (req, res) => {
   try {
+    const result =
+      registerSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid registration data",
+        errors: result.error.flatten(),
+      });
+    }
+
     const {
       username,
       email,
       password,
-    } = req.body;
-
-    if (
-      !username ||
-      !email ||
-      !password
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Username, email and password are required",
-      });
-    }
-
-    if (password.length < 8) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Password must be at least 8 characters",
-      });
-    }
+    } = result.data;
 
     const existingUser =
       await User.findOne({
@@ -83,10 +100,20 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
+    const result =
+      loginSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid login data",
+      });
+    }
+
     const {
       email,
       password,
-    } = req.body;
+    } = result.data;
 
     const user =
       await User.findOne({ email });

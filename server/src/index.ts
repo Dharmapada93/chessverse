@@ -6,6 +6,9 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+
 import { connectDatabase } from "./config/database.js";
 import authRoutes from "./routes/auth.js";
 import gameRoutes from "./routes/games.js";
@@ -18,9 +21,20 @@ import { registerSocketHandlers } from "./socket/socket.js";
 const app = express();
 const httpServer = createServer(app);
 
+app.use(helmet());
+
 const PORT = Number(process.env.PORT) || 4000;
 const CLIENT_URL =
   process.env.CLIENT_URL || "http://localhost:3000";
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use("/api", apiLimiter);
 
 app.use(
   cors({
