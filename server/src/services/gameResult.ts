@@ -24,23 +24,30 @@ export async function finishGame(
     );
   }
 
-  if (game.status === "finished") {
+  if (
+    game.status === "finished"
+  ) {
     return game;
   }
 
+  if (
+    !game.whitePlayerId ||
+    !game.blackPlayerId
+  ) {
+    throw new Error(
+      "Both players are required",
+    );
+  }
+
   const white =
-    game.whitePlayerId
-      ? await User.findById(
-          game.whitePlayerId,
-        )
-      : null;
+    await User.findById(
+      game.whitePlayerId,
+    );
 
   const black =
-    game.blackPlayerId
-      ? await User.findById(
-          game.blackPlayerId,
-        )
-      : null;
+    await User.findById(
+      game.blackPlayerId,
+    );
 
   if (!white || !black) {
     throw new Error(
@@ -75,8 +82,11 @@ export async function finishGame(
       blackScore,
     );
 
-  white.rating += whiteChange;
-  black.rating += blackChange;
+  white.rating +=
+    whiteChange;
+
+  black.rating +=
+    blackChange;
 
   if (!white.ratingHistory) {
     white.ratingHistory = [];
@@ -104,9 +114,20 @@ export async function finishGame(
   await white.save();
   await black.save();
 
-  game.status = "finished";
-  game.result = result;
-  game.resultReason = reason;
+  game.status =
+    "finished";
+
+  game.result =
+    result;
+
+  game.resultReason =
+    reason;
+
+  game.finishedAt =
+    new Date();
+
+  game.activeColor =
+    undefined;
 
   await game.save();
 

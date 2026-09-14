@@ -13,7 +13,9 @@ import {
   switchClock,
 } from "./clock.js";
 import { User } from "../models/User.js";
+import { Game } from "../models/Game.js";
 import { Message } from "../models/Message.js";
+import { finishGame } from "../services/gameResult.js";
 
 type RoomPlayer = {
   socketId: string;
@@ -174,6 +176,50 @@ export function registerSocketHandlers(io: Server) {
             promotion,
             san: result.move.san,
           });
+        }
+
+        if (
+          result.isCheckmate ||
+          result.isDraw
+        ) {
+          const dbGame =
+            await Game.findOne({
+              roomId,
+              status: {
+                $in: [
+                  "waiting",
+                  "playing",
+                ],
+              },
+            });
+
+          if (dbGame) {
+            const winner =
+              result.isCheckmate
+                ? result.turn === "white"
+                  ? "black"
+                  : "white"
+                : "draw";
+
+            const reason =
+              result.isCheckmate
+                ? "checkmate"
+                : "draw";
+
+            await finishGame(
+              dbGame._id.toString(),
+              winner,
+              reason,
+            );
+
+            io.to(roomId).emit(
+              "game:finished",
+              {
+                result: winner,
+                reason,
+              },
+            );
+          }
         }
 
         if (result.turn) {
