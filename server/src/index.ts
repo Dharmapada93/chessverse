@@ -10,6 +10,7 @@ import { connectDatabase } from "./config/database.js";
 import authRoutes from "./routes/auth.js";
 import messageRoutes from "./routes/messages.js";
 import roomRoutes from "./routes/rooms.js";
+import socialRoutes from "./routes/social.js";
 import userRoutes from "./routes/users.js";
 import { registerSocketHandlers } from "./socket/socket.js";
 
@@ -32,6 +33,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/rooms", roomRoutes);
+app.use("/api/social", socialRoutes);
 app.use("/api/users", userRoutes);
 
 app.get("/api/health", (_req, res) => {
