@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Swords, Eye } from "lucide-react";
+import { Plus, Swords, Eye, Users } from "lucide-react";
 
 const actions = [
   {
@@ -13,6 +13,12 @@ const actions = [
     icon: Plus,
     title: "Create a room",
     description: "Invite your friends",
+  },
+  {
+    href: "/room/join",
+    icon: Users,
+    title: "Join a room",
+    description: "Enter a friend's room",
   },
   {
     href: "/watch",
@@ -29,7 +35,7 @@ export default function QuickActions() {
         Quick actions
       </p>
 
-      <div className="grid gap-2 sm:grid-cols-3">
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {actions.map((action) => {
           const Icon = action.icon;
 

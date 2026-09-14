@@ -13,6 +13,7 @@ import {
   Play,
   UserPlus,
 } from "lucide-react";
+import { getRoom } from "@/lib/room-storage";
 import type { Room } from "@/types/room";
 
 const friends = [
@@ -43,19 +44,15 @@ export default function RoomLobbyPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("chessverse-room");
+    const storedRoom = getRoom();
 
-    if (!stored) {
+    if (!storedRoom) {
       router.replace("/room/create");
       return;
     }
 
-    try {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRoom(JSON.parse(stored) as Room);
-    } catch {
-      router.replace("/room/create");
-    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setRoom(storedRoom);
   }, [router]);
 
   if (!room) {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { createRoom } from "@/lib/room-storage";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -218,38 +219,26 @@ export default function CreateRoomPage() {
 
             <button
               onClick={() => {
-                const room = {
-                  id: "friday-night",
-                  code: "CV-4821",
-                  settings: {
-                    name: roomName || "Untitled room",
-                    visibility,
-                    rated,
-                    spectators,
-                    timeControl:
-                      timeControls
-                        .map((control) => ({
-                          ...control,
-                          minutes: Number(control.value.split("+")[0]),
-                          increment: Number(control.value.split("+")[1]),
-                        }))
-                        .find((control) => control.value === timeControl) ?? {
-                        ...timeControls[0],
-                        minutes: Number(timeControls[0].value.split("+")[0]),
-                        increment: Number(timeControls[0].value.split("+")[1]),
-                      },
-                  },
-                  host: {
-                    name: "You",
-                    rating: 1428,
-                  },
-                  status: "waiting" as const,
-                };
+                const selectedTimeControl =
+                  timeControls.find(
+                    (control) => control.value === timeControl,
+                  ) ?? timeControls[0];
 
-                sessionStorage.setItem(
-                  "chessverse-room",
-                  JSON.stringify(room),
-                );
+                const room = createRoom({
+                  name: roomName || "Untitled room",
+                  visibility,
+                  rated,
+                  spectators,
+                  timeControl: {
+                    label: selectedTimeControl.label,
+                    minutes: Number(
+                      selectedTimeControl.value.split("+")[0],
+                    ),
+                    increment: Number(
+                      selectedTimeControl.value.split("+")[1],
+                    ),
+                  },
+                });
 
                 router.push(`/room/${room.id}/lobby`);
               }}
