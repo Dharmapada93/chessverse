@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Copy, Crown, MessageCircle, Users } from "lucide-react";
 import ChessGame from "@/components/chess/ChessGame";
+import RoomClient from "@/components/room/RoomClient";
 
 const spectators = [
   { name: "Priya", rating: 1512, online: true, isHost: true },
@@ -15,9 +16,17 @@ const messages = [
   { name: "Aman", text: "Don't spoil it 😄" },
 ];
 
-export default function ChessRoomPage() {
+export default async function ChessRoomPage({
+  params,
+}: {
+  params: Promise<{ roomId: string }>;
+}) {
+  const { roomId } = await params;
+
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-[#f4f1e9]">
+    <>
+      <RoomClient roomId={roomId} />
+      <main className="min-h-screen bg-[#0a0a0a] text-[#f4f1e9]">
       {/* Header */}
       <header className="flex h-16 items-center justify-between border-b border-white/8 px-6">
         <div className="flex items-center gap-4">
@@ -160,5 +169,6 @@ export default function ChessRoomPage() {
         </section>
       </div>
     </main>
+    </>
   );
 }
