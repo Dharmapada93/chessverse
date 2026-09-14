@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Check,
@@ -12,6 +13,7 @@ import {
   Play,
   UserPlus,
 } from "lucide-react";
+import type { Room } from "@/types/room";
 
 const friends = [
   {
@@ -35,11 +37,40 @@ const friends = [
 ];
 
 export default function RoomLobbyPage() {
+  const router = useRouter();
+  const [room, setRoom] = useState<Room | null>(null);
   const [copied, setCopied] = useState(false);
   const [ready, setReady] = useState(false);
 
+  useEffect(() => {
+    const stored = sessionStorage.getItem("chessverse-room");
+
+    if (!stored) {
+      router.replace("/room/create");
+      return;
+    }
+
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setRoom(JSON.parse(stored) as Room);
+    } catch {
+      router.replace("/room/create");
+    }
+  }, [router]);
+
+  if (!room) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#0a0a0a] text-white">
+        <p className="text-sm text-white/40">
+          Loading room...
+        </p>
+      </main>
+    );
+  }
+
   function copyRoomCode() {
-    navigator.clipboard.writeText("CV-4821");
+    if (!room) return;
+    navigator.clipboard.writeText(room.code);
     setCopied(true);
 
     setTimeout(() => {
@@ -60,7 +91,7 @@ export default function RoomLobbyPage() {
           </Link>
 
           <div>
-            <p className="text-sm font-medium">Friday Night Chess</p>
+            <p className="text-sm font-medium">{room.settings.name}</p>
             <p className="text-xs text-white/30">Room lobby</p>
           </div>
         </div>
@@ -79,7 +110,7 @@ export default function RoomLobbyPage() {
           </p>
 
           <h1 className="mt-3 text-3xl font-medium tracking-tight">
-            Get your game ready.
+            {room.settings.name}
           </h1>
 
           <p className="mt-2 text-sm text-white/35">
@@ -97,7 +128,7 @@ export default function RoomLobbyPage() {
 
                 <div className="mt-2 flex items-center gap-3">
                   <span className="font-mono text-2xl tracking-[0.18em]">
-                    CV-4821
+                    {room.code}
                   </span>
 
                   <button
@@ -135,9 +166,9 @@ export default function RoomLobbyPage() {
               <div className="grid gap-3 sm:grid-cols-2">
                 {/* Host */}
                 <PlayerCard
-                  name="You"
-                  rating={1428}
-                  initials="D"
+                  name={room.host.name}
+                  rating={room.host.rating}
+                  initials={room.host.name.charAt(0)}
                   host
                   ready
                 />
@@ -232,22 +263,28 @@ export default function RoomLobbyPage() {
               <div className="mt-5 space-y-4">
                 <SettingRow
                   label="Time control"
-                  value="5 + 3"
+                  value={room.settings.timeControl.label}
                 />
 
                 <SettingRow
                   label="Game type"
-                  value="Casual"
+                  value={room.settings.rated ? "Rated" : "Casual"}
                 />
 
                 <SettingRow
                   label="Visibility"
-                  value="Private"
+                  value={
+                    room.settings.visibility === "private"
+                      ? "Private"
+                      : "Public"
+                  }
                 />
 
                 <SettingRow
                   label="Spectators"
-                  value="Allowed"
+                  value={
+                    room.settings.spectators ? "Allowed" : "Disabled"
+                  }
                 />
               </div>
             </div>

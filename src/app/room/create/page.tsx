@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -21,6 +22,7 @@ const timeControls = [
 ];
 
 export default function CreateRoomPage() {
+  const router = useRouter();
   const [roomName, setRoomName] = useState("Friday Night Chess");
   const [timeControl, setTimeControl] = useState("5+3");
   const [visibility, setVisibility] = useState<"private" | "public">(
@@ -214,7 +216,45 @@ export default function CreateRoomPage() {
               </div>
             </div>
 
-            <button className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#d7b875] px-4 py-3 text-sm font-medium text-[#171512] transition hover:bg-[#e1c68b]">
+            <button
+              onClick={() => {
+                const room = {
+                  id: "friday-night",
+                  code: "CV-4821",
+                  settings: {
+                    name: roomName || "Untitled room",
+                    visibility,
+                    rated,
+                    spectators,
+                    timeControl:
+                      timeControls
+                        .map((control) => ({
+                          ...control,
+                          minutes: Number(control.value.split("+")[0]),
+                          increment: Number(control.value.split("+")[1]),
+                        }))
+                        .find((control) => control.value === timeControl) ?? {
+                        ...timeControls[0],
+                        minutes: Number(timeControls[0].value.split("+")[0]),
+                        increment: Number(timeControls[0].value.split("+")[1]),
+                      },
+                  },
+                  host: {
+                    name: "You",
+                    rating: 1428,
+                  },
+                  status: "waiting" as const,
+                };
+
+                sessionStorage.setItem(
+                  "chessverse-room",
+                  JSON.stringify(room),
+                );
+
+                router.push(`/room/${room.id}/lobby`);
+              }}
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#d7b875] px-4 py-3 text-sm font-medium text-[#171512] transition hover:bg-[#e1c68b]"
+            >
               <Play size={16} />
               Create room
             </button>
