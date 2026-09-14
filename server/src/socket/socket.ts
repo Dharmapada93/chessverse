@@ -13,6 +13,7 @@ import {
   switchClock,
 } from "./clock.js";
 import { User } from "../models/User.js";
+import { Message } from "../models/Message.js";
 
 type RoomPlayer = {
   socketId: string;
@@ -200,27 +201,61 @@ export function registerSocketHandlers(io: Server) {
 
     socket.on(
       "chat:send",
-      ({
+      async ({
         roomId,
-        name,
         message,
       }: {
         roomId: string;
-        name: string;
         message: string;
       }) => {
-        const trimmedMessage = message.trim();
+        try {
+          const user =
+            await User.findById(
+              socket.data.userId,
+            );
 
-        if (!trimmedMessage) {
-          return;
+          if (!user) {
+            return;
+          }
+
+          const trimmedMessage =
+            message.trim();
+
+          if (!trimmedMessage) {
+            return;
+          }
+
+          const savedMessage =
+            await Message.create({
+              roomId,
+              userId:
+                user._id.toString(),
+              username:
+                user.username,
+              message:
+                trimmedMessage,
+            });
+
+          io.to(roomId).emit(
+            "chat:message",
+            {
+              id: savedMessage._id.toString(),
+              userId:
+                savedMessage.userId,
+              name:
+                savedMessage.username,
+              message:
+                savedMessage.message,
+              createdAt:
+                savedMessage.createdAt,
+            },
+          );
+        } catch (error) {
+          console.error(
+            "Chat message error:",
+            error,
+          );
         }
-
-        io.to(roomId).emit("chat:message", {
-          id: crypto.randomUUID(),
-          name,
-          message: trimmedMessage,
-          createdAt: new Date().toISOString(),
-        });
       },
     );
 
