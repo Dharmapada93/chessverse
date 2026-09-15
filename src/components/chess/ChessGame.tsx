@@ -5,6 +5,8 @@ import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import { socket } from "@/lib/socket";
 import GameResult from "./GameResult";
+import LiveReactions from "@/components/room/LiveReactions";
+import ReactionOverlay from "@/components/room/ReactionOverlay";
 
 type ChessGameProps = {
   roomId: string;
@@ -20,6 +22,7 @@ export default function ChessGame({
   const [playerColor, setPlayerColor] = useState<"white" | "black" | null>(null);
   const [gameId, setGameId] = useState<string | null>(null);
   const [hasDrawOffer, setHasDrawOffer] = useState(false);
+  const [spectatorCount, setSpectatorCount] = useState(0);
   const [gameResult, setGameResult] = useState<{
     result: "white" | "black" | "draw";
     reason: "checkmate" | "timeout" | "resignation" | "draw";
@@ -29,6 +32,25 @@ export default function ChessGame({
     black: 5 * 60 * 1000,
     activeColor: "white" as "white" | "black" | null,
   });
+
+  useEffect(() => {
+    function handleMembers(data: {
+      members: {
+        socketId: string;
+        role: "player" | "spectator";
+      }[];
+    }) {
+      setSpectatorCount(
+        data.members.filter((member) => member.role === "spectator").length,
+      );
+    }
+
+    socket.on("room:members", handleMembers);
+
+    return () => {
+      socket.off("room:members", handleMembers);
+    };
+  }, []);
 
   useEffect(() => {
     function handleDrawOffer() {
@@ -356,6 +378,8 @@ export default function ChessGame({
           }}
         />
 
+        <ReactionOverlay />
+
         {gameResult && (
           <GameResult
             result={gameResult.result}
@@ -398,6 +422,24 @@ export default function ChessGame({
           </button>
         </div>
       )}
+
+      {/* Room Footer */}
+      <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-5">
+        <div className="flex items-center gap-4 text-sm text-white/40">
+          <span>
+            {spectatorCount} watching
+          </span>
+
+          <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            Live
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <LiveReactions roomId={roomId} />
+        </div>
+      </div>
 
       <p className="mt-4 text-xs text-white/35">
         Moves are validated by the ChessVerse server.

@@ -18,14 +18,18 @@ const messages = [
 
 export default async function ChessRoomPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ roomId: string }>;
+  searchParams?: Promise<{ role?: string }>;
 }) {
   const { roomId } = await params;
+  const sp = searchParams ? await searchParams : undefined;
+  const role = sp?.role === "spectator" ? "spectator" : "player";
 
   return (
     <>
-      <RoomClient roomId={roomId} role="player" />
+      <RoomClient roomId={roomId} role={role} />
       <main className="min-h-screen bg-[#0a0a0a] text-[#f4f1e9]">
       {/* Header */}
       <header className="flex h-16 items-center justify-between border-b border-white/8 px-6">
@@ -83,7 +87,7 @@ export default async function ChessRoomPage({
 
           {/* Board */}
           <div className="mx-auto w-full max-w-[720px]">
-            <ChessGame roomId={roomId} role="player" />
+            <ChessGame roomId={roomId} role={role} />
           </div>
 
           {/* Player bottom */}

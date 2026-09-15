@@ -1,4 +1,5 @@
 import type { Server } from "socket.io";
+import crypto from "node:crypto";
 import { Chess } from "chess.js";
 import {
   addPlayer,
@@ -672,6 +673,50 @@ export function registerSocketHandlers(io: Server) {
             error,
           );
         }
+      },
+    );
+
+    socket.on(
+      "room:reaction",
+      ({
+        roomId,
+        reaction,
+      }: {
+        roomId: string;
+        reaction: string;
+      }) => {
+        const allowed =
+          [
+            "👏",
+            "🔥",
+            "😮",
+            "😂",
+            "♟️",
+          ];
+
+        if (
+          !allowed.includes(
+            reaction,
+          )
+        ) {
+          return;
+        }
+
+        io.to(roomId).emit(
+          "room:reaction",
+          {
+            id:
+              crypto.randomUUID(),
+
+            userId:
+              socket.data.userId,
+
+            reaction,
+
+            createdAt:
+              new Date().toISOString(),
+          },
+        );
       },
     );
 
