@@ -24,7 +24,16 @@ import { registerSocketHandlers } from "./socket/socket.js";
 const app = express();
 const httpServer = createServer(app);
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: false,
+  }),
+);
+
+app.get("/.well-known/*", (_req, res) => {
+  res.status(204).end();
+});
 
 const PORT = Number(process.env.PORT) || 4000;
 const CLIENT_URL =

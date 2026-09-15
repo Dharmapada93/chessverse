@@ -73,8 +73,9 @@ router.get(
         });
 
       if (!game) {
-        return res.status(404).json({
-          success: false,
+        return res.json({
+          success: true,
+          game: null,
           message:
             "No active game found",
         });
