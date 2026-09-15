@@ -31,9 +31,14 @@ export function useStockfish() {
     engine.current?.stop();
   }
 
+  function getBestMove(fen: string, depth = 10) {
+    return engine.current?.getBestMove(fen, depth);
+  }
+
   return {
     analysis,
     analyze,
+    getBestMove,
     stop,
   };
 }

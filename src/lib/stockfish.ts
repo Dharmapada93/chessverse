@@ -68,6 +68,19 @@ export class StockfishEngine {
     this.worker?.postMessage(command);
   }
 
+  private moveResolvers: ((move: string) => void)[] = [];
+
+  getBestMove(fen: string, depth = 10): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (!this.worker) {
+        return reject(new Error("Stockfish is not initialized"));
+      }
+      this.moveResolvers.push(resolve);
+      this.send(`position fen ${fen}`);
+      this.send(`go depth ${depth}`);
+    });
+  }
+
   private handleMessage(message: string) {
     if (message === "uciok") {
       this.send("isready");
@@ -76,6 +89,16 @@ export class StockfishEngine {
 
     if (message === "readyok") {
       this.ready = true;
+      return;
+    }
+
+    if (message.startsWith("bestmove")) {
+      const parts = message.split(" ");
+      const move = parts[1];
+      const resolver = this.moveResolvers.shift();
+      if (resolver && move) {
+        resolver(move);
+      }
       return;
     }
 

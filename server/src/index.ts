@@ -31,8 +31,17 @@ app.use(
   }),
 );
 
-app.get("/.well-known/*", (_req, res) => {
+app.use("/.well-known", (_req, res) => {
   res.status(204).end();
+});
+
+app.get("/", (_req, res) => {
+  res.json({
+    success: true,
+    service: "ChessVerse API",
+    status: "running",
+    version: "1.0.0",
+  });
 });
 
 const PORT = Number(process.env.PORT) || 4000;
