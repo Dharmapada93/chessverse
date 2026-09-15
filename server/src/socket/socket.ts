@@ -18,6 +18,7 @@ import { Game } from "../models/Game.js";
 import { Message } from "../models/Message.js";
 import { finishGame } from "../services/gameResult.js";
 import { createGameForRoom } from "../services/game.js";
+import { checkGameTimeout } from "../services/gameTimeout.js";
 
 type RoomPlayer = {
   socketId: string;
@@ -49,6 +50,33 @@ function broadcastClock(
 }
 
 export function registerSocketHandlers(io: Server) {
+  setInterval(async () => {
+    for (const roomId of roomPlayers.keys()) {
+      try {
+        const game = await Game.findOne({
+          roomId,
+          status: "playing",
+        });
+
+        if (game) {
+          const timeout = await checkGameTimeout(game._id.toString());
+          if (timeout) {
+            await finishGame(
+              game._id.toString(),
+              timeout.result,
+              timeout.reason,
+            );
+            io.to(roomId).emit("game:finished", {
+              result: timeout.result,
+              reason: timeout.reason,
+            });
+          }
+        }
+      } catch {
+        // Ignore background timeout check errors
+      }
+    }
+  }, 1000);
 
   io.on("connection", (socket) => {
     console.log(`Socket connected: ${socket.id}`);
@@ -243,6 +271,30 @@ export function registerSocketHandlers(io: Server) {
         to: string;
         promotion?: string;
       }) => {
+        const activeGame = await Game.findOne({
+          roomId,
+          status: "playing",
+        });
+
+        if (activeGame) {
+          const timeout = await checkGameTimeout(activeGame._id.toString());
+          if (timeout) {
+            await finishGame(
+              activeGame._id.toString(),
+              timeout.result,
+              timeout.reason,
+            );
+            io.to(roomId).emit("game:finished", {
+              result: timeout.result,
+              reason: timeout.reason,
+            });
+            socket.emit("game:moveRejected", {
+              error: "Time expired",
+            });
+            return;
+          }
+        }
+
         const result = makeMove(
           roomId,
           socket.id,
@@ -321,6 +373,141 @@ export function registerSocketHandlers(io: Server) {
         }
 
         io.to(roomId).emit("game:state", result);
+      },
+    );
+
+    socket.on(
+      "game:resign",
+      async ({
+        gameId,
+      }: {
+        gameId: string;
+      }) => {
+        try {
+          const game =
+            await Game.findById(
+              gameId,
+            );
+
+          if (
+            !game ||
+            game.status !==
+              "playing"
+          ) {
+            return;
+          }
+
+          const userId =
+            socket.data.userId;
+
+          let result:
+            | "white"
+            | "black";
+
+          if (
+            game.whitePlayerId ===
+            userId
+          ) {
+            result = "black";
+          } else if (
+            game.blackPlayerId ===
+            userId
+          ) {
+            result = "white";
+          } else {
+            return;
+          }
+
+          await finishGame(
+            game._id.toString(),
+            result,
+            "resignation",
+          );
+
+          io.to(
+            game.roomId,
+          ).emit(
+            "game:finished",
+            {
+              result,
+              reason:
+                "resignation",
+            },
+          );
+        } catch {
+          socket.emit(
+            "game:error",
+            {
+              message:
+                "Unable to resign",
+            },
+          );
+        }
+      },
+    );
+
+    socket.on(
+      "game:drawOffer",
+      ({
+        roomId,
+      }: {
+        roomId: string;
+      }) => {
+        socket.to(roomId).emit(
+          "game:drawOffer",
+          {
+            userId:
+              socket.data.userId,
+          },
+        );
+      },
+    );
+
+    socket.on(
+      "game:drawAccept",
+      async ({
+        gameId,
+      }: {
+        gameId: string;
+      }) => {
+        try {
+          const game =
+            await Game.findById(
+              gameId,
+            );
+
+          if (
+            !game ||
+            game.status !==
+              "playing"
+          ) {
+            return;
+          }
+
+          await finishGame(
+            game._id.toString(),
+            "draw",
+            "draw",
+          );
+
+          io.to(
+            game.roomId,
+          ).emit(
+            "game:finished",
+            {
+              result: "draw",
+              reason: "draw",
+            },
+          );
+        } catch {
+          socket.emit(
+            "game:error",
+            {
+              message:
+                "Unable to accept draw",
+            },
+          );
+        }
       },
     );
 

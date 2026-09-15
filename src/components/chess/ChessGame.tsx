@@ -18,11 +18,26 @@ export default function ChessGame({
   const [status, setStatus] = useState("Waiting for players");
   const [playerColor, setPlayerColor] = useState<"white" | "black" | null>(null);
   const [gameId, setGameId] = useState<string | null>(null);
+  const [hasDrawOffer, setHasDrawOffer] = useState(false);
   const [clock, setClock] = useState({
     white: 5 * 60 * 1000,
     black: 5 * 60 * 1000,
     activeColor: "white" as "white" | "black" | null,
   });
+
+  useEffect(() => {
+    function handleDrawOffer() {
+      if (role === "player") {
+        setHasDrawOffer(true);
+      }
+    }
+
+    socket.on("game:drawOffer", handleDrawOffer);
+
+    return () => {
+      socket.off("game:drawOffer", handleDrawOffer);
+    };
+  }, [role]);
 
   useEffect(() => {
     async function restoreGame() {
@@ -258,6 +273,31 @@ export default function ChessGame({
         </div>
       </div>
 
+      {hasDrawOffer && role === "player" && (
+        <div className="mb-4 flex items-center justify-between rounded-xl border border-[#d7b875]/40 bg-[#171714] p-3.5 text-sm shadow-lg">
+          <span className="text-[#d7b875] font-medium">Opponent offered a draw</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                if (gameId) {
+                  socket.emit("game:drawAccept", { gameId });
+                }
+                setHasDrawOffer(false);
+              }}
+              className="rounded-lg bg-[#d7b875] px-3 py-1.5 text-xs font-semibold text-black transition hover:brightness-110"
+            >
+              Accept
+            </button>
+            <button
+              onClick={() => setHasDrawOffer(false)}
+              className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5 hover:text-white"
+            >
+              Decline
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="overflow-hidden rounded-xl border border-white/10 shadow-2xl">
         <Chessboard
           options={{
@@ -280,6 +320,34 @@ export default function ChessGame({
           }}
         />
       </div>
+
+      {role === "player" && (
+        <div className="mt-4 flex items-center gap-3">
+          <button
+            onClick={() => {
+              if (gameId) {
+                socket.emit("game:resign", {
+                  gameId,
+                });
+              }
+            }}
+            className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/5 hover:text-white"
+          >
+            Resign
+          </button>
+
+          <button
+            onClick={() => {
+              socket.emit("game:drawOffer", {
+                roomId,
+              });
+            }}
+            className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/5 hover:text-white"
+          >
+            Offer draw
+          </button>
+        </div>
+      )}
 
       <p className="mt-4 text-xs text-white/35">
         Moves are validated by the ChessVerse server.
