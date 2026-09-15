@@ -120,4 +120,41 @@ router.get(
   },
 );
 
+router.get(
+  "/:id/analysis",
+  requireAuth,
+  async (
+    req: AuthRequest,
+    res,
+  ) => {
+    try {
+      const game =
+        await Game.findById(
+          req.params.id,
+        );
+
+      if (!game) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Game not found",
+        });
+      }
+
+      return res.json({
+        success: true,
+        analysis: null,
+        message:
+          "Analysis has not been generated yet.",
+      });
+    } catch {
+      return res.status(500).json({
+        success: false,
+        message:
+          "Failed to load analysis",
+      });
+    }
+  },
+);
+
 export default router;
