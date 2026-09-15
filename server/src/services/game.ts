@@ -61,6 +61,9 @@ export async function createGameForRoom(
       incrementMs:
         room.timeControl.increment *
         1000,
+
+      lastClockUpdateAt:
+        new Date(),
     });
 
   return game;

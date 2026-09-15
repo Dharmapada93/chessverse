@@ -8,7 +8,9 @@ export async function startGameClock(
   gameId: string,
 ) {
   const game =
-    await Game.findById(gameId);
+    await Game.findById(
+      gameId,
+    );
 
   if (!game) {
     throw new Error(
@@ -16,10 +18,11 @@ export async function startGameClock(
     );
   }
 
+  game.status = "playing";
   game.activeColor = "white";
   game.startedAt =
     game.startedAt ?? new Date();
-  game.status = "playing";
+  game.lastClockUpdateAt = new Date();
 
   await game.save();
 
@@ -47,13 +50,14 @@ export async function updateClockAfterMove(
 
   const now = Date.now();
 
-  const lastMoveAt =
+  const lastUpdate =
+    game.lastClockUpdateAt?.getTime() ??
     game.updatedAt.getTime();
 
   const elapsed =
     Math.max(
       0,
-      now - lastMoveAt,
+      now - lastUpdate,
     );
 
   if (
@@ -86,6 +90,7 @@ export async function updateClockAfterMove(
 
   game.activeColor =
     nextColor;
+  game.lastClockUpdateAt = new Date();
 
   await game.save();
 
@@ -112,9 +117,13 @@ export async function getCurrentClock(
     game.status === "playing" &&
     game.activeColor
   ) {
+    const lastUpdate =
+      game.lastClockUpdateAt?.getTime() ??
+      game.updatedAt.getTime();
+
     const elapsed =
       Date.now() -
-      game.updatedAt.getTime();
+      lastUpdate;
 
     if (
       game.activeColor ===

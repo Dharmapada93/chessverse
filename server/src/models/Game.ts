@@ -44,6 +44,8 @@ export interface IGame extends Document {
     | "white"
     | "black";
 
+  lastClockUpdateAt?: Date;
+
   startedAt?: Date;
   finishedAt?: Date;
 
@@ -154,6 +156,10 @@ const gameSchema =
           "white",
           "black",
         ],
+      },
+
+      lastClockUpdateAt: {
+        type: Date,
       },
 
       startedAt: {

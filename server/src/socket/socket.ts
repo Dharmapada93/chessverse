@@ -155,6 +155,7 @@ export function registerSocketHandlers(io: Server) {
               whiteTimeMs: 5 * 60 * 1000,
               blackTimeMs: 5 * 60 * 1000,
               incrementMs: 3 * 1000,
+              lastClockUpdateAt: new Date(),
             });
           }
         }
@@ -572,6 +573,9 @@ export function registerSocketHandlers(io: Server) {
 
             activeColor:
               "white",
+
+            lastClockUpdateAt:
+              new Date(),
 
             startedAt:
               new Date(),

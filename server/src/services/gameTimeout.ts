@@ -16,9 +16,13 @@ export async function checkGameTimeout(
     return null;
   }
 
+  const lastUpdate =
+    game.lastClockUpdateAt?.getTime() ??
+    game.updatedAt.getTime();
+
   const elapsed =
     Date.now() -
-    game.updatedAt.getTime();
+    lastUpdate;
 
   let remaining;
 
