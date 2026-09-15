@@ -512,6 +512,96 @@ export function registerSocketHandlers(io: Server) {
     );
 
     socket.on(
+      "game:rematch",
+      async ({
+        roomId,
+      }: {
+        roomId: string;
+      }) => {
+        const previousGame =
+          await Game.findOne({
+            roomId,
+            status: "finished",
+          }).sort({
+            finishedAt: -1,
+          });
+
+        if (!previousGame) {
+          return;
+        }
+
+        const newGame =
+          await Game.create({
+            roomId,
+
+            status: "playing",
+
+            whitePlayerId:
+              previousGame.blackPlayerId,
+
+            blackPlayerId:
+              previousGame.whitePlayerId,
+
+            whitePlayerName:
+              previousGame.blackPlayerName,
+
+            blackPlayerName:
+              previousGame.whitePlayerName,
+
+            whiteRating:
+              previousGame.blackRating,
+
+            blackRating:
+              previousGame.whiteRating,
+
+            initialFen:
+              new Chess().fen(),
+
+            currentFen:
+              new Chess().fen(),
+
+            whiteTimeMs:
+              previousGame.whiteTimeMs,
+
+            blackTimeMs:
+              previousGame.blackTimeMs,
+
+            incrementMs:
+              previousGame.incrementMs,
+
+            activeColor:
+              "white",
+
+            startedAt:
+              new Date(),
+          });
+
+        const inMemGame = getGame(roomId);
+        if (inMemGame) {
+          inMemGame.chess = new Chess();
+          for (const p of inMemGame.players) {
+            p.color = p.color === "white" ? "black" : "white";
+          }
+        }
+
+        await startGameClock(newGame._id.toString());
+
+        io.to(roomId).emit(
+          "game:rematchCreated",
+          {
+            gameId:
+              newGame._id.toString(),
+
+            fen:
+              newGame.currentFen,
+          },
+        );
+
+        broadcastClock(io, roomId, newGame._id.toString());
+      },
+    );
+
+    socket.on(
       "room:leave",
       ({ roomId }: { roomId: string }) => {
         socket.leave(roomId);

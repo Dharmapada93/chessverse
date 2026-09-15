@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import { socket } from "@/lib/socket";
+import GameResult from "./GameResult";
 
 type ChessGameProps = {
   roomId: string;
@@ -19,6 +20,10 @@ export default function ChessGame({
   const [playerColor, setPlayerColor] = useState<"white" | "black" | null>(null);
   const [gameId, setGameId] = useState<string | null>(null);
   const [hasDrawOffer, setHasDrawOffer] = useState(false);
+  const [gameResult, setGameResult] = useState<{
+    result: "white" | "black" | "draw";
+    reason: "checkmate" | "timeout" | "resignation" | "draw";
+  } | null>(null);
   const [clock, setClock] = useState({
     white: 5 * 60 * 1000,
     black: 5 * 60 * 1000,
@@ -198,8 +203,39 @@ export default function ChessGame({
     };
   }, [playerColor, role]);
 
+  useEffect(() => {
+    function handleGameFinished(data: {
+      result: "white" | "black" | "draw";
+      reason: "checkmate" | "timeout" | "resignation" | "draw";
+    }) {
+      setGameResult(data);
+    }
+
+    function handleRematchCreated(data: {
+      gameId: string;
+      fen: string;
+    }) {
+      setGameId(data.gameId);
+      setGame(new Chess(data.fen));
+      setGameResult(null);
+      setHasDrawOffer(false);
+      setPlayerColor((prev) =>
+        prev === "white" ? "black" : prev === "black" ? "white" : null,
+      );
+      socket.emit("game:clock", { gameId: data.gameId });
+    }
+
+    socket.on("game:finished", handleGameFinished);
+    socket.on("game:rematchCreated", handleRematchCreated);
+
+    return () => {
+      socket.off("game:finished", handleGameFinished);
+      socket.off("game:rematchCreated", handleRematchCreated);
+    };
+  }, []);
+
   function makeMove(sourceSquare: string, targetSquare: string) {
-    if (role === "spectator") {
+    if (role === "spectator" || gameResult) {
       return false;
     }
 
@@ -298,7 +334,7 @@ export default function ChessGame({
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-white/10 shadow-2xl">
+      <div className="relative overflow-hidden rounded-xl border border-white/10 shadow-2xl">
         <Chessboard
           options={{
             position: game.fen(),
@@ -307,7 +343,7 @@ export default function ChessGame({
               return makeMove(sourceSquare, targetSquare);
             },
             boardOrientation: playerColor === "black" ? "black" : "white",
-            allowDragging: role === "player",
+            allowDragging: role === "player" && !gameResult,
             boardStyle: {
               borderRadius: "0px",
             },
@@ -319,6 +355,20 @@ export default function ChessGame({
             },
           }}
         />
+
+        {gameResult && (
+          <GameResult
+            result={gameResult.result}
+            reason={gameResult.reason}
+            playerColor={playerColor}
+            onRematch={() => {
+              socket.emit("game:rematch", {
+                roomId,
+              });
+              setGameResult(null);
+            }}
+          />
+        )}
       </div>
 
       {role === "player" && (
