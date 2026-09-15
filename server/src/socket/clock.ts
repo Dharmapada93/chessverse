@@ -1,149 +1,148 @@
-type ClockState = {
-  white: number;
-  black: number;
-  increment: number;
-  activeColor: "white" | "black" | null;
-  lastUpdate: number;
-  timer?: NodeJS.Timeout;
-};
+import { Game } from "../models/Game.js";
 
-const clocks = new Map<string, ClockState>();
+export type ClockColor =
+  | "white"
+  | "black";
 
-export function createClock(
-  roomId: string,
-  minutes: number,
-  increment: number,
+export async function startGameClock(
+  gameId: string,
 ) {
-  const existing = clocks.get(roomId);
+  const game =
+    await Game.findById(gameId);
 
-  if (existing) {
-    return existing;
-  }
-
-  const clock: ClockState = {
-    white: minutes * 60 * 1000,
-    black: minutes * 60 * 1000,
-    increment: increment * 1000,
-    activeColor: null,
-    lastUpdate: Date.now(),
-  };
-
-  clocks.set(roomId, clock);
-
-  return clock;
-}
-
-export function startClock(
-  roomId: string,
-  color: "white" | "black",
-) {
-  const clock = clocks.get(roomId);
-
-  if (!clock) {
-    return;
-  }
-
-  clock.activeColor = color;
-  clock.lastUpdate = Date.now();
-
-  if (clock.timer) {
-    clearInterval(clock.timer);
-  }
-
-  clock.timer = setInterval(() => {
-    if (!clock.activeColor) {
-      return;
-    }
-
-    const now = Date.now();
-    const elapsed =
-      now - clock.lastUpdate;
-
-    clock[clock.activeColor] -= elapsed;
-    clock.lastUpdate = now;
-
-    if (
-      clock[clock.activeColor] <= 0
-    ) {
-      clock[clock.activeColor] = 0;
-
-      clearInterval(clock.timer);
-    }
-  }, 100);
-}
-
-export function switchClock(
-  roomId: string,
-  nextColor: "white" | "black",
-) {
-  const clock = clocks.get(roomId);
-
-  if (!clock) {
-    return;
-  }
-
-  const now = Date.now();
-
-  if (clock.activeColor) {
-    const elapsed =
-      now - clock.lastUpdate;
-
-    clock[clock.activeColor] -= elapsed;
-
-    if (
-      clock[clock.activeColor] < 0
-    ) {
-      clock[clock.activeColor] = 0;
-    }
-
-    clock[clock.activeColor] +=
-      clock.increment;
-  }
-
-  clock.activeColor = nextColor;
-  clock.lastUpdate = now;
-}
-
-export function getClock(roomId: string) {
-  const clock = clocks.get(roomId);
-
-  if (!clock) {
-    return null;
-  }
-
-  const now = Date.now();
-
-  const result = {
-    white: clock.white,
-    black: clock.black,
-    activeColor: clock.activeColor,
-  };
-
-  if (clock.activeColor) {
-    const elapsed =
-      now - clock.lastUpdate;
-
-    result[clock.activeColor] = Math.max(
-      0,
-      result[clock.activeColor] - elapsed,
+  if (!game) {
+    throw new Error(
+      "Game not found",
     );
   }
 
-  return result;
+  game.activeColor = "white";
+  game.startedAt =
+    game.startedAt ?? new Date();
+  game.status = "playing";
+
+  await game.save();
+
+  return game;
 }
 
-export function removeClock(
-  roomId: string,
+export async function updateClockAfterMove(
+  gameId: string,
+  nextColor: ClockColor,
 ) {
-  const clock = clocks.get(roomId);
+  const game =
+    await Game.findById(gameId);
 
-  if (!clock) {
-    return;
+  if (!game) {
+    throw new Error(
+      "Game not found",
+    );
   }
 
-  if (clock.timer) {
-    clearInterval(clock.timer);
+  if (
+    game.status !== "playing"
+  ) {
+    return game;
   }
 
-  clocks.delete(roomId);
+  const now = Date.now();
+
+  const lastMoveAt =
+    game.updatedAt.getTime();
+
+  const elapsed =
+    Math.max(
+      0,
+      now - lastMoveAt,
+    );
+
+  if (
+    game.activeColor === "white"
+  ) {
+    game.whiteTimeMs =
+      Math.max(
+        0,
+        game.whiteTimeMs -
+          elapsed,
+      );
+
+    game.whiteTimeMs +=
+      game.incrementMs;
+  }
+
+  if (
+    game.activeColor === "black"
+  ) {
+    game.blackTimeMs =
+      Math.max(
+        0,
+        game.blackTimeMs -
+          elapsed,
+      );
+
+    game.blackTimeMs +=
+      game.incrementMs;
+  }
+
+  game.activeColor =
+    nextColor;
+
+  await game.save();
+
+  return game;
+}
+
+export async function getCurrentClock(
+  gameId: string,
+) {
+  const game =
+    await Game.findById(gameId);
+
+  if (!game) {
+    return null;
+  }
+
+  let whiteTime =
+    game.whiteTimeMs;
+
+  let blackTime =
+    game.blackTimeMs;
+
+  if (
+    game.status === "playing" &&
+    game.activeColor
+  ) {
+    const elapsed =
+      Date.now() -
+      game.updatedAt.getTime();
+
+    if (
+      game.activeColor ===
+      "white"
+    ) {
+      whiteTime =
+        Math.max(
+          0,
+          whiteTime - elapsed,
+        );
+    }
+
+    if (
+      game.activeColor ===
+      "black"
+    ) {
+      blackTime =
+        Math.max(
+          0,
+          blackTime - elapsed,
+        );
+    }
+  }
+
+  return {
+    white: whiteTime,
+    black: blackTime,
+    activeColor:
+      game.activeColor,
+  };
 }

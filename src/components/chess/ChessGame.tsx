@@ -17,11 +17,12 @@ export default function ChessGame({
   const [game, setGame] = useState(() => new Chess());
   const [status, setStatus] = useState("Waiting for players");
   const [playerColor, setPlayerColor] = useState<"white" | "black" | null>(null);
-  const [clock, setClock] = useState<{
-    white: number;
-    black: number;
-    activeColor: "white" | "black" | null;
-  } | null>(null);
+  const [gameId, setGameId] = useState<string | null>(null);
+  const [clock, setClock] = useState({
+    white: 5 * 60 * 1000,
+    black: 5 * 60 * 1000,
+    activeColor: "white" as "white" | "black" | null,
+  });
 
   useEffect(() => {
     async function restoreGame() {
@@ -49,12 +50,20 @@ export default function ChessGame({
         const data =
           await response.json();
 
-        if (data.success) {
+        if (data.success && data.game) {
+          setGameId(data.game._id);
           setGame(
             new Chess(
               data.game.currentFen,
             ),
           );
+          if (data.game.whiteTimeMs != null && data.game.blackTimeMs != null) {
+            setClock({
+              white: data.game.whiteTimeMs,
+              black: data.game.blackTimeMs,
+              activeColor: data.game.activeColor ?? null,
+            });
+          }
         }
       } catch {
         // Keep the local game state.
@@ -65,11 +74,48 @@ export default function ChessGame({
   }, [roomId]);
 
   useEffect(() => {
+    function handleClock(nextClock: {
+      white: number;
+      black: number;
+      activeColor: "white" | "black" | null;
+    }) {
+      setClock(nextClock);
+    }
+
+    socket.on("game:clock", handleClock);
+
+    return () => {
+      socket.off("game:clock", handleClock);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!clock.activeColor) return;
+
+    const timer = setInterval(() => {
+      setClock((prev) => {
+        if (!prev.activeColor) return prev;
+        return {
+          ...prev,
+          [prev.activeColor]: Math.max(0, prev[prev.activeColor] - 1000),
+        };
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [clock.activeColor]);
+
+  useEffect(() => {
     function handleGameJoined(data: {
+      gameId?: string;
       fen: string;
       turn: "white" | "black";
       color: "white" | "black" | null;
     }) {
+      if (data.gameId) {
+        setGameId(data.gameId);
+        socket.emit("game:clock", { gameId: data.gameId });
+      }
       setGame(new Chess(data.fen));
       if (data.color) {
         setPlayerColor(data.color);
@@ -126,24 +172,14 @@ export default function ChessGame({
       setStatus(data.error);
     }
 
-    function handleClockState(data: {
-      white: number;
-      black: number;
-      activeColor: "white" | "black" | null;
-    }) {
-      setClock(data);
-    }
-
     socket.on("game:joined", handleGameJoined);
     socket.on("game:state", handleGameState);
     socket.on("game:moveRejected", handleRejected);
-    socket.on("clock:state", handleClockState);
 
     return () => {
       socket.off("game:joined", handleGameJoined);
       socket.off("game:state", handleGameState);
       socket.off("game:moveRejected", handleRejected);
-      socket.off("clock:state", handleClockState);
     };
   }, [playerColor, role]);
 
@@ -162,7 +198,7 @@ export default function ChessGame({
     return true;
   }
 
-  function formatTime(milliseconds: number) {
+  function formatClock(milliseconds: number) {
     const totalSeconds = Math.ceil(milliseconds / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -192,29 +228,33 @@ export default function ChessGame({
       {/* Clocks */}
       <div className="mb-3 grid grid-cols-2 gap-3">
         <div
-          className={`rounded-xl border px-4 py-3 ${
-            clock?.activeColor === "black"
+          className={`rounded-xl border px-4 py-3 transition-colors ${
+            clock.activeColor === "white"
               ? "border-[#d7b875]/40 bg-[#171714]"
-              : "border-white/10"
+              : "border-white/10 bg-white/[0.02]"
           }`}
         >
-          <p className="text-xs text-white/40">Black</p>
-          <p className="mt-1 text-2xl font-semibold">
-            {clock ? formatTime(clock.black) : "5:00"}
-          </p>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-white/50">White</span>
+            <span className="font-mono text-2xl font-semibold">
+              {formatClock(clock.white)}
+            </span>
+          </div>
         </div>
 
         <div
-          className={`rounded-xl border px-4 py-3 ${
-            clock?.activeColor === "white"
+          className={`rounded-xl border px-4 py-3 transition-colors ${
+            clock.activeColor === "black"
               ? "border-[#d7b875]/40 bg-[#171714]"
-              : "border-white/10"
+              : "border-white/10 bg-white/[0.02]"
           }`}
         >
-          <p className="text-xs text-white/40">White</p>
-          <p className="mt-1 text-2xl font-semibold">
-            {clock ? formatTime(clock.white) : "5:00"}
-          </p>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-white/50">Black</span>
+            <span className="font-mono text-2xl font-semibold">
+              {formatClock(clock.black)}
+            </span>
+          </div>
         </div>
       </div>
 
