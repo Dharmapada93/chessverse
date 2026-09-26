@@ -33,19 +33,19 @@ export default function CreateRoomPage() {
   const [spectators, setSpectators] = useState(true);
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-[#f4f1e9]">
+    <main className="min-h-screen bg-transparent text-[#171A18] animate-pageEnter">
       {/* Header */}
-      <header className="flex h-16 items-center border-b border-white/8 px-6">
+      <header className="flex h-16 items-center border-b border-[rgba(30,30,20,0.08)] bg-[#F7F4EC]/90 backdrop-blur-md px-6">
         <Link
           href="/dashboard"
-          className="mr-4 rounded-lg p-2 text-white/45 transition hover:bg-white/5 hover:text-white"
+          className="mr-4 rounded-xl p-2 text-[#68706A] transition hover:bg-white hover:text-[#171A18]"
         >
           <ArrowLeft size={19} />
         </Link>
 
         <div>
-          <p className="text-sm font-medium">Create a room</p>
-          <p className="text-xs text-white/30">
+          <p className="text-sm font-semibold text-[#171A18]">Create a room</p>
+          <p className="text-xs text-[#68706A]">
             Set up a game for your friends
           </p>
         </div>
@@ -53,15 +53,15 @@ export default function CreateRoomPage() {
 
       <div className="mx-auto max-w-4xl px-5 py-12">
         <div className="mb-10">
-          <p className="mb-3 text-xs uppercase tracking-[0.2em] text-[#d7b875]">
+          <p className="mb-3 text-xs uppercase tracking-[0.2em] text-[#B88A32] font-bold">
             New room
           </p>
 
-          <h1 className="text-3xl font-medium tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight text-[#171A18]">
             Bring your people together.
           </h1>
 
-          <p className="mt-3 max-w-xl text-sm leading-6 text-white/40">
+          <p className="mt-3 max-w-xl text-sm leading-6 text-[#68706A]">
             Create a private chess room, invite your friends, and let
             everyone watch the games unfold.
           </p>
@@ -69,16 +69,16 @@ export default function CreateRoomPage() {
 
         <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
           {/* Settings */}
-          <section className="rounded-2xl border border-white/8 bg-[#11110f] p-6">
+          <section className="rounded-2xl border border-[rgba(30,30,20,0.08)] bg-white/85 p-6 shadow-[0_8px_30px_rgba(35,30,20,0.04)]">
             <div className="mb-8">
-              <label className="mb-2 block text-xs uppercase tracking-wider text-white/35">
+              <label className="mb-2 block text-xs uppercase tracking-wider text-[#68706A] font-semibold">
                 Room name
               </label>
 
               <input
                 value={roomName}
                 onChange={(event) => setRoomName(event.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm outline-none transition placeholder:text-white/20 focus:border-[#d7b875]/50"
+                className="w-full rounded-xl border border-[rgba(30,30,20,0.12)] bg-white px-4 py-3 text-sm text-[#171A18] outline-none transition placeholder:text-[#68706A]/40 focus:border-[#B88A32] shadow-sm"
                 placeholder="Give your room a name"
               />
             </div>
@@ -86,11 +86,11 @@ export default function CreateRoomPage() {
             {/* Time control */}
             <div className="mb-8">
               <div className="mb-3 flex items-center justify-between">
-                <label className="text-xs uppercase tracking-wider text-white/35">
+                <label className="text-xs uppercase tracking-wider text-[#68706A] font-semibold">
                   Time control
                 </label>
 
-                <span className="text-xs text-white/25">
+                <span className="text-xs text-[#68706A] font-mono">
                   {timeControl}
                 </span>
               </div>
@@ -103,21 +103,21 @@ export default function CreateRoomPage() {
                     <button
                       key={control.value}
                       onClick={() => setTimeControl(control.value)}
-                      className={`rounded-xl border p-4 text-left transition ${
+                      className={`rounded-xl border p-4 text-left transition cursor-pointer shadow-sm ${
                         active
-                          ? "border-[#d7b875]/60 bg-[#d7b875]/8"
-                          : "border-white/8 bg-black/10 hover:border-white/15"
+                          ? "border-[#B88A32] bg-[#B88A32]/10"
+                          : "border-[rgba(30,30,20,0.08)] bg-[#FAF8F2] hover:border-[rgba(30,30,20,0.2)]"
                       }`}
                     >
                       <p
-                        className={`font-mono text-sm ${
-                          active ? "text-[#d7b875]" : "text-white/80"
+                        className={`font-mono text-sm font-bold ${
+                          active ? "text-[#B88A32]" : "text-[#171A18]"
                         }`}
                       >
                         {control.label}
                       </p>
 
-                      <p className="mt-1 text-[11px] text-white/30">
+                      <p className="mt-1 text-[11px] text-[#68706A]">
                         {control.description}
                       </p>
                     </button>
@@ -128,7 +128,7 @@ export default function CreateRoomPage() {
 
             {/* Visibility */}
             <div className="mb-8">
-              <label className="mb-3 block text-xs uppercase tracking-wider text-white/35">
+              <label className="mb-3 block text-xs uppercase tracking-wider text-[#68706A] font-semibold">
                 Room visibility
               </label>
 
@@ -172,26 +172,26 @@ export default function CreateRoomPage() {
           </section>
 
           {/* Preview */}
-          <aside className="h-fit rounded-2xl border border-white/8 bg-[#11110f] p-5">
-            <p className="text-xs uppercase tracking-wider text-white/30">
+          <aside className="h-fit rounded-2xl border border-[rgba(30,30,20,0.08)] bg-white/85 p-5 shadow-[0_8px_30px_rgba(35,30,20,0.04)]">
+            <p className="text-xs uppercase tracking-wider text-[#68706A] font-semibold">
               Room preview
             </p>
 
-            <div className="mt-5 rounded-xl border border-white/8 bg-black/15 p-4">
+            <div className="mt-5 rounded-xl border border-[rgba(30,30,20,0.08)] bg-[#FAF8F2] p-4">
               <div className="mb-5 flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium">
+                  <p className="text-sm font-semibold text-[#171A18]">
                     {roomName || "Untitled room"}
                   </p>
 
-                  <p className="mt-1 text-xs text-white/30">
+                  <p className="mt-1 text-xs text-[#68706A]">
                     {visibility === "private"
                       ? "Private room"
                       : "Public room"}
                   </p>
                 </div>
 
-                <span className="rounded-md bg-white/5 px-2 py-1 text-[10px] text-white/40">
+                <span className="rounded-md bg-white border border-[rgba(30,30,20,0.08)] px-2 py-1 text-[10px] text-[#68706A] font-mono">
                   {timeControl}
                 </span>
               </div>
@@ -242,13 +242,13 @@ export default function CreateRoomPage() {
 
                 router.push(`/room/${room.id}/lobby`);
               }}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#d7b875] px-4 py-3 text-sm font-medium text-[#171512] transition hover:bg-[#e1c68b]"
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#B88A32] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#A07628] shadow-sm hover:-translate-y-0.5 cursor-pointer"
             >
               <Play size={16} />
               Create room
             </button>
 
-            <p className="mt-4 text-center text-[11px] leading-5 text-white/25">
+            <p className="mt-4 text-center text-[11px] leading-5 text-[#68706A]">
               You can invite friends after creating the room.
             </p>
           </aside>
@@ -274,19 +274,19 @@ function ChoiceButton({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${
+      className={`flex items-center gap-3 rounded-xl border p-4 text-left transition cursor-pointer shadow-sm ${
         active
-          ? "border-[#d7b875]/60 bg-[#d7b875]/8"
-          : "border-white/8 hover:border-white/15"
+          ? "border-[#B88A32] bg-[#B88A32]/10"
+          : "border-[rgba(30,30,20,0.08)] bg-[#FAF8F2] hover:border-[rgba(30,30,20,0.2)]"
       }`}
     >
-      <span className={active ? "text-[#d7b875]" : "text-white/40"}>
+      <span className={active ? "text-[#B88A32]" : "text-[#68706A]"}>
         {icon}
       </span>
 
       <span>
-        <span className="block text-sm">{title}</span>
-        <span className="mt-1 block text-[11px] text-white/30">
+        <span className="block text-sm font-semibold text-[#171A18]">{title}</span>
+        <span className="mt-1 block text-[11px] text-[#68706A]">
           {description}
         </span>
       </span>
@@ -310,14 +310,14 @@ function Toggle({
   return (
     <button
       onClick={onChange}
-      className="flex w-full items-center justify-between rounded-xl border border-white/8 p-4 text-left transition hover:border-white/15"
+      className="flex w-full items-center justify-between rounded-xl border border-[rgba(30,30,20,0.08)] bg-[#FAF8F2] p-4 text-left transition hover:border-[rgba(30,30,20,0.2)] cursor-pointer"
     >
       <div className="flex items-center gap-3">
-        <span className="text-white/40">{icon}</span>
+        <span className="text-[#68706A]">{icon}</span>
 
         <div>
-          <p className="text-sm">{title}</p>
-          <p className="mt-1 text-[11px] text-white/30">
+          <p className="text-sm font-medium text-[#171A18]">{title}</p>
+          <p className="mt-1 text-[11px] text-[#68706A]">
             {description}
           </p>
         </div>
@@ -325,11 +325,11 @@ function Toggle({
 
       <span
         className={`relative h-5 w-9 rounded-full transition ${
-          enabled ? "bg-[#d7b875]" : "bg-white/10"
+          enabled ? "bg-[#B88A32]" : "bg-neutral-200"
         }`}
       >
         <span
-          className={`absolute top-1 h-3 w-3 rounded-full bg-white transition ${
+          className={`absolute top-1 h-3 w-3 rounded-full bg-white transition shadow-sm ${
             enabled ? "left-5" : "left-1"
           }`}
         />
@@ -349,12 +349,12 @@ function PreviewRow({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2 text-white/40">
+      <div className="flex items-center gap-2 text-[#68706A]">
         {icon}
         <span>{text}</span>
       </div>
 
-      <span className="text-white/65">{value}</span>
+      <span className="text-[#171A18] font-medium">{value}</span>
     </div>
   );
 }

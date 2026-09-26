@@ -1,178 +1,236 @@
+"use client";
+
+import { useEffect, useState, use } from "react";
 import Link from "next/link";
-import { ArrowLeft, Copy, Crown, MessageCircle, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  Copy,
+  Check,
+  Crown,
+  Eye,
+  Swords,
+  Users,
+} from "lucide-react";
 import ChessGame from "@/components/chess/ChessGame";
+import GameChat from "@/components/game/GameChat";
 import RoomClient from "@/components/room/RoomClient";
 
-const spectators = [
-  { name: "Priya", rating: 1512, online: true, isHost: true },
-  { name: "Rahul", rating: 1438, online: true },
-  { name: "Aman", rating: 1396, online: true },
-  { name: "Rohan", rating: 1472, online: false },
-];
+type RoomData = {
+  code: string;
+  name?: string;
+  status: string;
+  hostId?: {
+    username: string;
+    avatar?: string;
+    rating?: number;
+  };
+  guestId?: {
+    username: string;
+    avatar?: string;
+    rating?: number;
+  };
+  spectators?: Array<{
+    username: string;
+    avatar?: string;
+    rating?: number;
+  }>;
+};
 
-const messages = [
-  { name: "Priya", text: "That opening was clean." },
-  { name: "Rahul", text: "I think Aman has a tactic here." },
-  { name: "Aman", text: "Don't spoil it 😄" },
-];
-
-export default async function ChessRoomPage({
+export default function ChessRoomPage({
   params,
   searchParams,
 }: {
   params: Promise<{ roomId: string }>;
   searchParams?: Promise<{ role?: string }>;
 }) {
-  const { roomId } = await params;
-  const sp = searchParams ? await searchParams : undefined;
-  const role = sp?.role === "spectator" ? "spectator" : "player";
+  const resolvedParams = use(params);
+  const resolvedSearchParams = searchParams ? use(searchParams) : undefined;
+
+  const roomId = resolvedParams.roomId;
+  const role =
+    resolvedSearchParams?.role === "spectator" ? "spectator" : "player";
+
+  const [room, setRoom] = useState<RoomData | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      "http://localhost:4000";
+
+    fetch(`${apiUrl}/api/rooms/${roomId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.room) {
+          setRoom(data.room);
+        }
+      })
+      .catch(() => {});
+  }, [roomId]);
+
+  function copyInvite() {
+    const origin =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://chessverse.app";
+    const inviteUrl = `${origin}/room/${room?.code || roomId}`;
+    navigator.clipboard.writeText(inviteUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  const roomCode = room?.code || roomId.toUpperCase();
 
   return (
     <>
       <RoomClient roomId={roomId} role={role} />
-      <main className="min-h-screen bg-[#0a0a0a] text-[#f4f1e9]">
-      {/* Header */}
-      <header className="flex h-16 items-center justify-between border-b border-white/8 px-6">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard"
-            className="rounded-lg p-2 text-white/50 transition hover:bg-white/5 hover:text-white"
-          >
-            <ArrowLeft size={19} />
-          </Link>
+      <main className="min-h-screen bg-transparent text-[#171A18] animate-pageEnter">
+        {/* Header */}
+        <header className="flex h-16 items-center justify-between border-b border-[rgba(30,30,20,0.08)] bg-[#FAF8F2]/80 backdrop-blur-md px-6">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/play"
+              className="rounded-lg p-2 text-[#68706A] transition hover:bg-[rgba(30,30,20,0.05)] hover:text-[#171A18]"
+            >
+              <ArrowLeft size={19} />
+            </Link>
 
-          <div>
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-medium">Friday Night Chess</p>
-              <Crown size={13} className="text-[#d7b875]" />
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-semibold text-[#171A18]">
+                  {room?.name || "Private Chess Room"}
+                </p>
+                <Crown size={14} className="text-[#B88A32]" />
+              </div>
+              <p className="text-xs text-[#68706A]">
+                Room #{roomCode}
+              </p>
             </div>
-            <p className="text-xs text-white/35">Room #CV-4821</p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/watch/${roomCode}`}
+              className="flex items-center gap-2 rounded-lg border border-[rgba(30,30,20,0.12)] bg-white px-3 py-2 text-xs font-medium text-[#68706A] transition hover:bg-[#FAF8F2] hover:text-[#171A18] shadow-sm"
+            >
+              <Eye size={14} />
+              <span>Watch Mode</span>
+            </Link>
+
+            <button
+              onClick={copyInvite}
+              className="flex items-center gap-2 rounded-lg bg-[#B88A32] px-3.5 py-2 text-xs font-medium text-white transition hover:bg-[#A07628] shadow-sm"
+            >
+              {copied ? (
+                <>
+                  <Check size={14} className="text-emerald-200" />
+                  <span>Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy size={14} />
+                  <span>Copy Invite</span>
+                </>
+              )}
+            </button>
+          </div>
+        </header>
+
+        <div className="mx-auto max-w-[1500px] p-6 space-y-6">
+          {/* Room Banner & Player Cards */}
+          <div className="rounded-2xl border border-[rgba(30,30,20,0.08)] bg-white/85 backdrop-blur-md p-6 shadow-[0_8px_30px_rgba(35,30,20,0.04)]">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#B88A32]">
+                  Room Access Code
+                </p>
+                <h1 className="mt-1 text-3xl font-mono font-bold tracking-wider text-[#171A18]">
+                  {roomCode}
+                </h1>
+                <p className="mt-1 text-xs text-[#68706A]">
+                  Share this code with your peer to start playing in real time.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="rounded-xl border border-[rgba(30,30,20,0.08)] bg-[#FAF8F2] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[#68706A]">
+                  Status: {room?.status || "Waiting"}
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <PlayerCard
+                label="White (Host)"
+                username={room?.hostId?.username || "Host Player"}
+                rating={room?.hostId?.rating || 1200}
+                isHost
+              />
+
+              <PlayerCard
+                label="Black (Guest)"
+                username={
+                  room?.guestId?.username || "Waiting for opponent..."
+                }
+                rating={room?.guestId?.rating}
+              />
+            </div>
+          </div>
+
+          {/* Main Board & Live Chat Grid */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
+            {/* Chess Area */}
+            <section className="rounded-2xl border border-[rgba(30,30,20,0.08)] bg-white/85 backdrop-blur-md p-6 shadow-[0_8px_30px_rgba(35,30,20,0.04)]">
+              <div className="mx-auto w-full max-w-[720px]">
+                <ChessGame roomId={roomId} role={role} />
+              </div>
+            </section>
+
+            {/* Live Social Chat */}
+            <aside>
+              <GameChat roomId={roomId} />
+            </aside>
           </div>
         </div>
-
-        <button className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 transition hover:bg-white/5 hover:text-white">
-          <Copy size={14} />
-          Copy invite
-        </button>
-      </header>
-
-      <div className="mx-auto grid max-w-[1500px] grid-cols-1 gap-5 p-5 lg:grid-cols-[1fr_300px_320px]">
-        {/* Chess Area */}
-        <section>
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-white/35">
-                Live Match
-              </p>
-              <h1 className="mt-1 text-xl font-medium">
-                Aman vs Rohan
-              </h1>
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-white/40">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              Live
-            </div>
-          </div>
-
-          {/* Player top */}
-          <div className="mb-3 flex items-center justify-between rounded-xl border border-white/8 bg-[#11110f] px-4 py-3">
-            <div>
-              <p className="text-sm font-medium">Rohan</p>
-              <p className="text-xs text-white/35">1,472</p>
-            </div>
-
-            <div className="font-mono text-xl">08:42</div>
-          </div>
-
-          {/* Board */}
-          <div className="mx-auto w-full max-w-[720px]">
-            <ChessGame roomId={roomId} role={role} />
-          </div>
-
-          {/* Player bottom */}
-          <div className="mt-3 flex items-center justify-between rounded-xl border border-white/8 bg-[#11110f] px-4 py-3">
-            <div>
-              <p className="text-sm font-medium">Aman</p>
-              <p className="text-xs text-white/35">1,396</p>
-            </div>
-
-            <div className="font-mono text-xl">09:18</div>
-          </div>
-        </section>
-
-        {/* Spectators */}
-        <section className="rounded-xl border border-white/8 bg-[#11110f]">
-          <div className="border-b border-white/8 p-5">
-            <div className="flex items-center gap-2">
-              <Users size={17} className="text-white/50" />
-              <h2 className="text-sm font-medium">Spectators</h2>
-            </div>
-
-            <p className="mt-1 text-xs text-white/35">
-              24 people watching
-            </p>
-          </div>
-
-          <div className="divide-y divide-white/6">
-            {spectators.map((person) => (
-              <div
-                key={person.name}
-                className="flex items-center justify-between px-5 py-4"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/8 text-xs font-medium">
-                    {person.name.charAt(0)}
-                  </div>
-
-                  <div>
-                    <p className="text-sm">{person.name}</p>
-                    <p className="text-xs text-white/30">
-                      {person.rating}
-                    </p>
-                  </div>
-                </div>
-
-                <span
-                  className={`h-2 w-2 rounded-full ${
-                    person.online ? "bg-emerald-400" : "bg-white/15"
-                  }`}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Chat */}
-        <section className="flex min-h-[620px] flex-col rounded-xl border border-white/8 bg-[#11110f]">
-          <div className="flex items-center gap-2 border-b border-white/8 p-5">
-            <MessageCircle size={17} className="text-white/50" />
-            <h2 className="text-sm font-medium">Room Chat</h2>
-          </div>
-
-          <div className="flex-1 space-y-5 overflow-auto p-5">
-            {messages.map((message, index) => (
-              <div key={index}>
-                <p className="mb-1 text-xs font-medium text-white/45">
-                  {message.name}
-                </p>
-                <p className="text-sm leading-6 text-white/75">
-                  {message.text}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="border-t border-white/8 p-4">
-            <input
-              type="text"
-              placeholder="Say something..."
-              className="w-full rounded-lg border border-white/8 bg-black/20 px-3 py-2.5 text-sm outline-none placeholder:text-white/20 focus:border-white/20"
-            />
-          </div>
-        </section>
-      </div>
-    </main>
+      </main>
     </>
+  );
+}
+
+function PlayerCard({
+  label,
+  username,
+  rating,
+  isHost,
+}: {
+  label: string;
+  username: string;
+  rating?: number;
+  isHost?: boolean;
+}) {
+  return (
+    <div className="rounded-xl border border-[rgba(30,30,20,0.08)] bg-[#FAF8F2] p-5">
+      <div className="flex items-center justify-between">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#68706A]">
+          {label}
+        </p>
+        {isHost && (
+          <span className="text-xs font-semibold text-[#B88A32] flex items-center gap-1">
+            <Crown size={12} /> Host
+          </span>
+        )}
+      </div>
+
+      <div className="mt-2 flex items-center justify-between">
+        <p className="text-base font-semibold text-[#171A18]">
+          {username}
+        </p>
+        {rating && (
+          <span className="text-xs font-mono font-medium text-[#68706A]">
+            {rating}
+          </span>
+        )}
+      </div>
+    </div>
   );
 }

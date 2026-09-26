@@ -1,79 +1,112 @@
 "use client";
 
-import {
-  Brain,
-  MessageCircle,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import CoachChat from "@/components/coach/CoachChat";
 
 export default function CoachPage() {
+  const [userId, setUserId] = useState("CURRENT_USER_ID");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("chessverse-token");
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          if (payload?.userId) {
+            setUserId(payload.userId);
+          }
+        } catch {
+          // Keep default
+        }
+      }
+    }
+  }, []);
+
   return (
-    <main className="min-h-screen bg-[#0a0a0a] px-6 py-10 text-[#f4f1e9]">
-      <div className="mx-auto max-w-4xl">
-        <header className="mb-10">
-          <div className="mb-4 flex items-center gap-2 text-[#d7b875]">
-            <Brain size={20} />
+    <main className="min-h-screen bg-[#0b0b0a] px-6 py-12 text-[#f4f0e6]">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-10">
+          <p className="text-[10px] uppercase tracking-[0.35em] text-white/35">
+            Personal Chess Intelligence
+          </p>
 
-            <span className="text-sm uppercase tracking-[0.18em]">
-              ChessVerse AI
-            </span>
-          </div>
-
-          <h1 className="text-4xl font-semibold tracking-tight">
-            Chess Coach
+          <h1 className="mt-3 text-4xl font-semibold">
+            Your Chess Coach
           </h1>
 
-          <p className="mt-3 max-w-xl text-white/40">
-            Ask questions about your games, understand mistakes, and build better chess habits.
+          <p className="mt-3 max-w-2xl text-white/50">
+            Ask questions about your games,
+            weaknesses, tactics, openings and
+            training plan.
           </p>
-        </header>
+        </div>
 
-        <section className="rounded-2xl border border-white/10 bg-[#11110f]">
-          <div className="border-b border-white/10 p-5">
-            <div className="flex items-center gap-3">
-              <MessageCircle
-                size={18}
-                className="text-[#d7b875]"
-              />
+        <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
+          <section className="flex flex-col justify-between rounded-3xl border border-white/10 bg-white/[0.025] p-7">
+            <div>
+              <p className="text-sm text-white/35">
+                Your current training focus
+              </p>
 
-              <span className="font-medium">
-                Ask your coach
-              </span>
-            </div>
-          </div>
+              <h2 className="mt-3 text-2xl font-medium">
+                Tactical awareness
+              </h2>
 
-          <div className="min-h-[420px] p-6">
-            <p className="max-w-md text-sm leading-7 text-white/35">
-              Try questions like:
-            </p>
+              <p className="mt-4 max-w-xl leading-7 text-white/50">
+                Your recent analysis shows that
+                tactical positions are the biggest
+                opportunity for improvement.
+              </p>
 
-            <div className="mt-4 space-y-2">
-              <div className="rounded-xl border border-white/10 p-4 text-sm text-white/60">
-                Why was my move on move 18 a mistake?
+              <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+                  <p className="text-xs text-white/35">
+                    Tactical
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold text-[#d7b875]">
+                    78
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+                  <p className="text-xs text-white/35">
+                    Opening
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold">
+                    84
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+                  <p className="text-xs text-white/35">
+                    Endgame
+                  </p>
+                  <p className="mt-2 text-2xl font-semibold">
+                    71
+                  </p>
+                </div>
               </div>
-
-              <div className="rounded-xl border border-white/10 p-4 text-sm text-white/60">
-                What should I improve based on my last five games?
-              </div>
-
-              <div className="rounded-xl border border-white/10 p-4 text-sm text-white/60">
-                What opening should I practice?
-              </div>
             </div>
-          </div>
 
-          <div className="border-t border-white/10 p-4">
-            <div className="flex gap-3">
-              <input
-                placeholder="Ask about your chess..."
-                className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm outline-none placeholder:text-white/25 focus:border-white/20"
-              />
-
-              <button className="rounded-xl bg-[#d7b875] px-5 text-sm font-medium text-black transition hover:brightness-110">
-                Ask
-              </button>
+            <div className="mt-10 flex flex-wrap gap-3">
+              <Link
+                href="/training"
+                className="rounded-xl bg-[#e9e2d0] px-5 py-3 text-sm font-medium text-black transition hover:opacity-90"
+              >
+                Solve Tactical Puzzles
+              </Link>
+              <Link
+                href="/training/dashboard"
+                className="rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-medium text-white transition hover:bg-white/[0.08]"
+              >
+                Training Dashboard
+              </Link>
             </div>
-          </div>
-        </section>
+          </section>
+
+          <CoachChat userId={userId} />
+        </div>
       </div>
     </main>
   );

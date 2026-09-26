@@ -1,13 +1,16 @@
 @import "tailwindcss";
+@import "../styles/tokens.css";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *, .dark, .dark *));
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #f4f1e9;
-  --muted: #8d8b84;
-  --line: rgba(255, 255, 255, 0.09);
-  --surface: #11110f;
-  --surface-hover: #171714;
-  --accent: #d7b875;
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+  --muted: var(--color-text-muted);
+  --line: var(--color-border);
+  --surface: var(--color-surface);
+  --surface-hover: var(--color-surface-hover);
+  --accent: var(--color-primary);
 }
 
 * {
@@ -16,19 +19,22 @@
 
 html {
   scroll-behavior: smooth;
-  background: var(--background);
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 body {
   margin: 0;
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
+/* Accessible selection color */
 ::selection {
-  background: rgba(215, 184, 117, 0.25);
-  color: white;
+  background: rgba(215, 184, 117, 0.3);
+  color: #ffffff;
 }
 
 button,
@@ -38,4 +44,34 @@ a {
 
 button {
   cursor: pointer;
+}
+
+/* Accessibility Focus Ring (R1.24) */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ── Remove Next.js floating N button dev indicator (R1.28 & R7.69) ── */
+[data-nextjs-dev-tools-button],
+#nextjs-dev-tools-button,
+nextjs-portal,
+[data-nextjs-toast],
+#__next-build-watcher {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+/* ── Reduced Motion Support (R8.36) ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

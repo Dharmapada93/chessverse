@@ -58,55 +58,54 @@ export default function JoinRoomPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-[#f4f1e9]">
-      <header className="flex h-16 items-center border-b border-white/8 px-6">
+    <main className="min-h-screen bg-transparent text-[#171A18] animate-pageEnter">
+      <header className="flex h-16 items-center border-b border-[rgba(30,30,20,0.08)] bg-[#FAF8F2]/80 backdrop-blur-md px-6">
         <button
           onClick={() => router.back()}
-          className="mr-4 rounded-lg p-2 text-white/40 transition hover:bg-white/5 hover:text-white"
+          className="mr-4 rounded-lg p-2 text-[#68706A] transition hover:bg-[rgba(30,30,20,0.05)] hover:text-[#171A18]"
         >
           <ArrowLeft size={19} />
         </button>
 
         <div>
-          <p className="text-sm font-medium">
-            Join a room
+          <p className="text-sm font-semibold text-[#171A18]">
+            Join a Room
           </p>
 
-          <p className="text-xs text-white/30">
-            Play with your friends
+          <p className="text-xs text-[#68706A]">
+            Enter a match or spectate live
           </p>
         </div>
       </header>
 
       <div className="mx-auto flex min-h-[calc(100vh-64px)] max-w-5xl items-center justify-center px-5 py-12">
-        <div className="grid w-full max-w-4xl gap-5 lg:grid-cols-[1fr_300px]">
-          {/* Main */}
-          <section className="rounded-2xl border border-white/8 bg-[#11110f] p-7 sm:p-9">
-            <div className="mb-9">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#d7b875]">
-                Join room
-              </p>
+        <div className="grid w-full max-w-4xl gap-6 lg:grid-cols-[1fr_300px]">
+          {/* Main Card */}
+          <section className="rounded-2xl border border-[rgba(30,30,20,0.08)] bg-white/85 backdrop-blur-md p-7 sm:p-9 shadow-[0_8px_30px_rgba(35,30,20,0.04)]">
+            <div className="mb-8">
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#B88A32]">
+                Join Room
+              </span>
 
-              <h1 className="mt-3 text-3xl font-medium tracking-tight">
+              <h1 className="mt-2 text-3xl font-serif font-medium tracking-tight text-[#171A18]">
                 Enter the room.
               </h1>
 
-              <p className="mt-3 max-w-lg text-sm leading-6 text-white/35">
-                Enter the room code shared by your friend.
-                You can join the game or simply watch.
+              <p className="mt-2 max-w-lg text-sm leading-6 text-[#68706A]">
+                Enter the room code shared by your peer. You can join directly to take a seat or spectate the game live.
               </p>
             </div>
 
-            {/* Code */}
+            {/* Code Input */}
             <div>
-              <label className="mb-2 block text-xs uppercase tracking-wider text-white/35">
-                Room code
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[#68706A]">
+                Room Code
               </label>
 
               <div className="relative">
                 <Hash
                   size={17}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/25"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-[#68706A]/50"
                 />
 
                 <input
@@ -126,12 +125,12 @@ export default function JoinRoomPage() {
                     }
                   }}
                   placeholder="CV-4821"
-                  className="w-full rounded-xl border border-white/10 bg-black/20 py-4 pl-11 pr-4 font-mono text-lg tracking-[0.15em] outline-none transition placeholder:text-white/15 focus:border-[#d7b875]/50"
+                  className="w-full rounded-xl border border-[rgba(30,30,20,0.12)] bg-[#FAF8F2] py-4 pl-11 pr-4 font-mono text-lg tracking-[0.15em] text-[#171A18] outline-none transition placeholder:text-[#68706A]/40 focus:border-[#B88A32] focus:ring-2 focus:ring-[#B88A32]/20"
                 />
               </div>
 
               {error && (
-                <p className="mt-2 text-xs text-red-400">
+                <p className="mt-2 text-xs font-medium text-rose-600">
                   {error}
                 </p>
               )}
@@ -139,8 +138,8 @@ export default function JoinRoomPage() {
 
             {/* Join mode */}
             <div className="mt-8">
-              <label className="mb-3 block text-xs uppercase tracking-wider text-white/35">
-                Join as
+              <label className="mb-3 block text-xs font-semibold uppercase tracking-wider text-[#68706A]">
+                Join As
               </label>
 
               <div className="grid gap-3 sm:grid-cols-2">
@@ -164,7 +163,7 @@ export default function JoinRoomPage() {
 
             <button
               onClick={joinRoom}
-              className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-[#d7b875] px-5 py-3.5 text-sm font-medium text-[#171512] transition hover:bg-[#e1c68b]"
+              className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-[#B88A32] px-5 py-3.5 text-sm font-medium text-white transition hover:bg-[#A07628] hover:-translate-y-0.5 shadow-sm"
             >
               {mode === "player" ? (
                 <Play size={16} />
@@ -178,13 +177,13 @@ export default function JoinRoomPage() {
             </button>
           </section>
 
-          {/* Info */}
-          <aside className="h-fit rounded-2xl border border-white/8 bg-[#11110f] p-5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5">
-              <Users size={19} className="text-[#d7b875]" />
+          {/* Info Sidebar */}
+          <aside className="h-fit rounded-2xl border border-[rgba(30,30,20,0.08)] bg-white/85 backdrop-blur-md p-6 shadow-[0_8px_30px_rgba(35,30,20,0.04)]">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FAF6EE] text-[#B88A32] border border-[#B88A32]/20">
+              <Users size={19} />
             </div>
 
-            <h2 className="mt-5 text-sm font-medium">
+            <h2 className="mt-5 text-sm font-semibold text-[#171A18]">
               How rooms work
             </h2>
 
@@ -192,19 +191,19 @@ export default function JoinRoomPage() {
               <InfoRow
                 number="01"
                 title="Join"
-                text="Enter the code shared by your friend."
+                text="Enter the unique code shared by your friend or club member."
               />
 
               <InfoRow
                 number="02"
                 title="Choose"
-                text="Play the match or join as a spectator."
+                text="Take your seat as a player or join to observe as a spectator."
               />
 
               <InfoRow
                 number="03"
                 title="Connect"
-                text="Chat and react while the game happens."
+                text="Realtime board sync, live chat, and clock synchronization."
               />
             </div>
           </aside>
@@ -232,23 +231,23 @@ function JoinModeCard({
       onClick={onClick}
       className={`rounded-xl border p-5 text-left transition ${
         active
-          ? "border-[#d7b875]/60 bg-[#d7b875]/8"
-          : "border-white/8 hover:border-white/15"
+          ? "border-[#B88A32] bg-[#FAF6EE] shadow-sm"
+          : "border-[rgba(30,30,20,0.08)] bg-white hover:border-[rgba(30,30,20,0.16)]"
       }`}
     >
       <div
         className={`mb-4 flex h-9 w-9 items-center justify-center rounded-lg ${
           active
-            ? "bg-[#d7b875]/10 text-[#d7b875]"
-            : "bg-white/5 text-white/40"
+            ? "bg-[#B88A32]/10 text-[#B88A32]"
+            : "bg-[#FAF8F2] text-[#68706A]"
         }`}
       >
         {icon}
       </div>
 
-      <p className="text-sm font-medium">{title}</p>
+      <p className="text-sm font-semibold text-[#171A18]">{title}</p>
 
-      <p className="mt-1 text-xs text-white/30">
+      <p className="mt-1 text-xs text-[#68706A]">
         {description}
       </p>
     </button>
@@ -266,14 +265,14 @@ function InfoRow({
 }) {
   return (
     <div className="flex gap-3">
-      <span className="font-mono text-[10px] text-[#d7b875]/60">
+      <span className="font-mono text-[10px] font-bold text-[#B88A32]">
         {number}
       </span>
 
       <div>
-        <p className="text-xs font-medium">{title}</p>
+        <p className="text-xs font-semibold text-[#171A18]">{title}</p>
 
-        <p className="mt-1 text-[11px] leading-5 text-white/30">
+        <p className="mt-1 text-[11px] leading-5 text-[#68706A]">
           {text}
         </p>
       </div>

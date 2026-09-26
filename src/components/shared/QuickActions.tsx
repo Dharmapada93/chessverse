@@ -6,36 +6,36 @@ const actions = [
     href: "/play",
     icon: Swords,
     title: "Play a game",
-    description: "Find an opponent",
+    description: "Find a match instantly",
   },
   {
     href: "/room/create",
     icon: Plus,
     title: "Create a room",
-    description: "Invite your friends",
+    description: "Private room with clock",
   },
   {
     href: "/room/join",
     icon: Users,
     title: "Join a room",
-    description: "Enter a friend's room",
+    description: "Enter with a room code",
   },
   {
     href: "/watch",
     icon: Eye,
     title: "Watch live",
-    description: "See who's playing",
+    description: "Spectate ongoing matches",
   },
 ];
 
 export default function QuickActions() {
   return (
     <section>
-      <p className="mb-4 text-xs uppercase tracking-[0.18em] text-white/25">
+      <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-[#B88A32]">
         Quick actions
       </p>
 
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {actions.map((action) => {
           const Icon = action.icon;
 
@@ -43,19 +43,20 @@ export default function QuickActions() {
             <Link
               key={action.title}
               href={action.href}
-              className="group rounded-2xl border border-white/8 bg-[#11110f] p-5 transition-colors hover:border-white/15 hover:bg-[#141412]"
+              className="group rounded-2xl border border-[rgba(30,30,20,0.08)] bg-white/85 backdrop-blur-md p-5 transition-all duration-200 hover:border-[#B88A32]/40 hover:bg-[#FAF8F2] hover:-translate-y-0.5 shadow-[0_8px_30px_rgba(35,30,20,0.04)]"
             >
-              <Icon
-                size={18}
-                strokeWidth={1.7}
-                className="text-white/40 transition-colors group-hover:text-[#d7b875]"
-              />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAF6EE] text-[#B88A32] border border-[#B88A32]/20 transition-transform group-hover:scale-105">
+                <Icon
+                  size={18}
+                  strokeWidth={2}
+                />
+              </div>
 
-              <p className="mt-7 text-sm font-medium">
+              <p className="mt-4 text-sm font-semibold text-[#171A18]">
                 {action.title}
               </p>
 
-              <p className="mt-1 text-xs text-white/30">
+              <p className="mt-0.5 text-xs text-[#68706A]">
                 {action.description}
               </p>
             </Link>

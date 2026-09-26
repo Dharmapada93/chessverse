@@ -121,6 +121,15 @@ challengeSchema.index({
   status: 1,
 });
 
+challengeSchema.index({
+  challengerId: 1,
+  status: 1,
+});
+
+challengeSchema.index({
+  roomId: 1,
+});
+
 export const Challenge =
   mongoose.models.Challenge ||
   model<IChallenge>(

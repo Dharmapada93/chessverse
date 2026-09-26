@@ -1,49 +1,48 @@
 import Link from "next/link";
+import ChessVerseLogo from "@/components/brand/ChessVerseLogo";
 
 export default function Navbar() {
   return (
     <header className="absolute inset-x-0 top-0 z-50">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
-        <Link
-          href="/"
-          className="flex items-center gap-3"
-          aria-label="ChessVerse home"
-        >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-lg">
-            ♟
-          </span>
+        <ChessVerseLogo variant="full" size="md" href="/" />
 
-          <span className="text-[15px] font-semibold tracking-[-0.02em]">
-            ChessVerse
-          </span>
-        </Link>
-
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 md:flex" aria-label="Main Navigation">
           <Link
-            href="#play"
-            className="text-sm text-white/55 transition-colors hover:text-white"
+            href="/play"
+            className="text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text)]"
           >
             Play
           </Link>
 
           <Link
-            href="#watch"
-            className="text-sm text-white/55 transition-colors hover:text-white"
+            href="/watch"
+            className="text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text)]"
           >
             Watch
           </Link>
 
           <Link
-            href="#features"
-            className="text-sm text-white/55 transition-colors hover:text-white"
+            href="/friends"
+            className="text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text)]"
           >
-            Features
+            Friends
+          </Link>
+
+          <Link
+            href="/training/dashboard"
+            className="text-sm text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-text)]"
+          >
+            Puzzles
           </Link>
         </nav>
 
-        <button className="rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-medium text-white/90 transition-colors hover:bg-white/[0.08]">
+        <Link
+          href="/dashboard"
+          className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-2 text-sm font-medium text-[var(--color-text)] transition-colors hover:bg-[var(--color-surface-hover)] focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+        >
           Sign in
-        </button>
+        </Link>
       </div>
     </header>
   );

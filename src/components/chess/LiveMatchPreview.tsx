@@ -1,123 +1,62 @@
-const pieces = [
-  ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"],
-  ["♟", "♟", "♟", "♟", "♟", "♟", "♟", "♟"],
-  ["", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", ""],
-  ["♙", "♙", "♙", "♙", "♙", "♙", "♙", "♙"],
-  ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"],
-];
+"use client";
+
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { Swords, Eye } from "lucide-react";
+import { apiFetch } from "@/lib/api";
 
 export default function LiveMatchPreview() {
+  const [liveGame, setLiveGame] = useState<any | null>(null);
+
+  useEffect(() => {
+    async function fetchActive() {
+      try {
+        const res = await apiFetch("/api/games/live/active");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.games) && data.games.length > 0) {
+            setLiveGame(data.games[0]);
+          }
+        }
+      } catch {}
+    }
+    fetchActive();
+  }, []);
+
+  if (!liveGame) {
+    return (
+      <div className="rounded-2xl border border-[rgba(30,30,20,0.08)] bg-white/85 backdrop-blur-md p-8 text-center shadow-[0_8px_30px_rgba(35,30,20,0.04)]">
+        <p className="text-sm font-semibold text-[#171A18]">No live games currently active</p>
+        <p className="mt-1 text-xs text-[#68706A]">
+          When matches begin, live boards and spectators will appear here.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <section
-      id="watch"
-      className="mx-auto max-w-7xl px-6 pb-32 lg:px-10"
-    >
-      <div className="grid overflow-hidden rounded-3xl border border-white/10 bg-[#11110f] lg:grid-cols-[1fr_320px]">
-        <div className="p-5 sm:p-8">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-red-400" />
-                <span className="text-xs font-medium uppercase tracking-[0.18em] text-white/45">
-                  Live match
-                </span>
-              </div>
-
-              <h2 className="mt-2 text-xl font-semibold tracking-tight">
-                Dharmapada vs Rahul
-              </h2>
-            </div>
-
-            <div className="text-right">
-              <div className="text-lg font-medium">10:42</div>
-              <div className="text-xs text-white/35">10 min</div>
-            </div>
-          </div>
-
-          <div className="mx-auto grid max-w-[640px] grid-cols-8 overflow-hidden rounded-xl border border-black/30">
-            {pieces.flatMap((row, rowIndex) =>
-              row.map((piece, colIndex) => {
-                const isLight = (rowIndex + colIndex) % 2 === 0;
-
-                return (
-                  <div
-                    key={`${rowIndex}-${colIndex}`}
-                    className={`flex aspect-square items-center justify-center text-[clamp(22px,5vw,46px)] ${
-                      isLight ? "bg-[#e5ddcc]" : "bg-[#8c7658]"
-                    }`}
-                  >
-                    <span
-                      className={
-                        rowIndex < 2
-                          ? "text-[#25231f]"
-                          : "text-[#f5f1e7]"
-                      }
-                    >
-                      {piece}
-                    </span>
-                  </div>
-                );
-              }),
-            )}
-          </div>
+    <section className="rounded-2xl border border-[rgba(30,30,20,0.08)] bg-white/90 backdrop-blur-md p-6 shadow-[0_8px_30px_rgba(35,30,20,0.04)]">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#B88A32]">Live Match</span>
         </div>
-
-        <aside className="border-t border-white/10 p-6 lg:border-l lg:border-t-0">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Watching</span>
-            <span className="text-sm text-white/40">24 people</span>
-          </div>
-
-          <div className="mt-6 space-y-4">
-            {[
-              ["RS", "Rahul", "1512"],
-              ["SA", "Sagar", "1478"],
-              ["AM", "Aman", "1432"],
-              ["PR", "Priya", "1396"],
-            ].map(([initials, name, rating]) => (
-              <div
-                key={name}
-                className="flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.06] text-xs text-white/60">
-                    {initials}
-                  </div>
-
-                  <div>
-                    <div className="text-sm">{name}</div>
-                    <div className="text-xs text-white/30">
-                      Rating {rating}
-                    </div>
-                  </div>
-                </div>
-
-                <span className="text-xs text-white/30">watching</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 border-t border-white/10 pt-6">
-            <div className="text-xs uppercase tracking-[0.18em] text-white/30">
-              Live chat
-            </div>
-
-            <div className="mt-4 space-y-3 text-sm">
-              <p className="text-white/55">
-                <span className="text-white/80">Sagar</span>{" "}
-                That knight move 👀
-              </p>
-
-              <p className="text-white/55">
-                <span className="text-white/80">Aman</span>{" "}
-                This is getting good.
-              </p>
-            </div>
-          </div>
-        </aside>
+        <Link
+          href={`/game/${liveGame.roomId || liveGame._id}`}
+          className="text-xs font-semibold text-[#B88A32] hover:text-[#A07628] hover:underline"
+        >
+          Watch live
+        </Link>
+      </div>
+      <div className="mt-4 flex items-center justify-between">
+        <div>
+          <p className="text-sm font-semibold text-[#171A18]">{liveGame.whitePlayerName || "White"} vs {liveGame.blackPlayerName || "Black"}</p>
+          <p className="text-xs text-[#68706A] font-mono">Rating: {liveGame.whiteRating || 1500} - {liveGame.blackRating || 1500}</p>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs text-[#68706A] font-mono">
+          <Eye size={13} className="text-[#B88A32]" />
+          <span>{liveGame.spectators || 0}</span>
+        </div>
       </div>
     </section>
   );

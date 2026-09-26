@@ -1,22 +1,30 @@
-import mongoose, {
-  Schema,
-  model,
-  type Document,
-} from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
+
+export type RoomStatus =
+  | "waiting"
+  | "playing"
+  | "finished";
 
 export interface IRoom extends Document {
   code: string;
-  name: string;
-  visibility: "private" | "public";
-  rated: boolean;
-  spectators: boolean;
-  timeControl: {
+  hostId: mongoose.Types.ObjectId;
+  guestId?: mongoose.Types.ObjectId;
+
+  status: RoomStatus;
+
+  gameId?: mongoose.Types.ObjectId;
+
+  spectators: mongoose.Types.ObjectId[];
+
+  name?: string;
+  visibility?: "private" | "public";
+  rated?: boolean;
+  timeControl?: {
     minutes: number;
     increment: number;
     label: string;
   };
-  hostId?: string;
-  status: "waiting" | "playing" | "finished";
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,11 +39,43 @@ const roomSchema = new Schema<IRoom>(
       index: true,
     },
 
+    hostId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    guestId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    status: {
+      type: String,
+      enum: [
+        "waiting",
+        "playing",
+        "finished",
+      ],
+      default: "waiting",
+    },
+
+    gameId: {
+      type: Schema.Types.ObjectId,
+      ref: "Game",
+    },
+
+    spectators: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
     name: {
       type: String,
-      required: true,
+      default: "Chess Match",
       trim: true,
-      maxlength: 100,
     },
 
     visibility: {
@@ -49,40 +89,19 @@ const roomSchema = new Schema<IRoom>(
       default: false,
     },
 
-    spectators: {
-      type: Boolean,
-      default: true,
-    },
-
     timeControl: {
       minutes: {
         type: Number,
-        required: true,
+        default: 10,
       },
-
       increment: {
         type: Number,
-        required: true,
+        default: 0,
       },
-
       label: {
         type: String,
-        required: true,
+        default: "10+0",
       },
-    },
-
-    hostId: {
-      type: String,
-    },
-
-    status: {
-      type: String,
-      enum: [
-        "waiting",
-        "playing",
-        "finished",
-      ],
-      default: "waiting",
     },
   },
   {
@@ -90,6 +109,10 @@ const roomSchema = new Schema<IRoom>(
   },
 );
 
+roomSchema.index({ visibility: 1, status: 1 });
+roomSchema.index({ gameId: 1 });
+roomSchema.index({ hostId: 1 });
+
 export const Room =
   mongoose.models.Room ||
-  model<IRoom>("Room", roomSchema);
+  mongoose.model<IRoom>("Room", roomSchema);

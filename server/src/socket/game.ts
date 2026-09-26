@@ -31,6 +31,50 @@ export function getGame(roomId: string) {
   return games.get(roomId);
 }
 
+export function ensureGame(
+  roomId: string,
+  fen?: string,
+  players?: GamePlayer[],
+) {
+  let game = games.get(roomId);
+  if (!game) {
+    try {
+      game = {
+        chess: fen ? new Chess(fen) : new Chess(),
+        players: players || [],
+      };
+    } catch {
+      game = {
+        chess: new Chess(),
+        players: players || [],
+      };
+    }
+    games.set(roomId, game);
+  } else if (fen && game.chess.fen() !== fen) {
+    try {
+      game.chess = new Chess(fen);
+    } catch {}
+  }
+
+  if (players && players.length > 0) {
+    for (const p of players) {
+      const existing = game.players.find(
+        (ep) => (ep.userId && ep.userId === p.userId) || ep.color === p.color,
+      );
+      if (existing) {
+        existing.socketId = p.socketId || existing.socketId;
+        existing.name = p.name || existing.name;
+        existing.rating = p.rating || existing.rating;
+        existing.color = p.color || existing.color;
+      } else if (game.players.length < 2) {
+        game.players.push(p);
+      }
+    }
+  }
+
+  return game;
+}
+
 export function addPlayer(
   roomId: string,
   socketId: string,
@@ -41,6 +85,16 @@ export function addPlayer(
   },
 ) {
   const game = createGame(roomId);
+
+  const existingByUserId = game.players.find(
+    (player) => player.userId === user.userId,
+  );
+  if (existingByUserId) {
+    existingByUserId.socketId = socketId;
+    existingByUserId.name = user.name;
+    existingByUserId.rating = user.rating;
+    return game;
+  }
 
   if (
     game.players.some(
@@ -78,13 +132,10 @@ export function removePlayer(
     return;
   }
 
+  // Do not delete game state on temporary disconnects
   game.players = game.players.filter(
     (player) => player.socketId !== socketId,
   );
-
-  if (game.players.length === 0) {
-    games.delete(roomId);
-  }
 }
 
 export function makeMove(
@@ -93,6 +144,7 @@ export function makeMove(
   from: string,
   to: string,
   promotion?: string,
+  userId?: string,
 ) {
   const game = games.get(roomId);
 
@@ -103,9 +155,16 @@ export function makeMove(
     };
   }
 
-  const player = game.players.find(
+  let player = game.players.find(
     (item) => item.socketId === socketId,
   );
+
+  if (!player && userId) {
+    player = game.players.find((item) => item.userId === userId);
+    if (player) {
+      player.socketId = socketId;
+    }
+  }
 
   if (!player) {
     return {

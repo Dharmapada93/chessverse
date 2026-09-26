@@ -1,0 +1,234 @@
+/**
+ * ChessVerse Design System Tokens (R16: Complete Visual Theme Reset)
+ * Aesthetic: Premium Private Chess Club
+ *
+ * Light Mode (Premium Ivory):
+ *   Primary Background: #EDE9DE
+ *   Surface: #F7F4EC
+ *   Card: #FBF9F3
+ *   Deep Forest: #18352B
+ *   Secondary Forest: #285443
+ *   Champagne Gold: #B58A3A
+ *   Light Gold: #D6B66A
+ *   Primary Text: #18221E
+ *   Secondary Text: #69736C
+ *   Border: rgba(24,34,30,0.10)
+ *   Success: #27815D
+ *   Danger: #A94B45
+ *
+ * Dark Mode (Premium Forest):
+ *   Background: #13201B (NO pure black)
+ *   Surface: #1B2A24
+ *   Card: #21332B
+ *   Text: #F4EFE3
+ *   Secondary: #B5BDB5
+ *   Gold: #D3AA58
+ *   Border: rgba(255,255,255,0.08)
+ *
+ * Legacy R1 Baseline Reference:
+ *   --color-bg: #0D0F12
+ *   --color-surface: #15181D
+ *   --color-surface-elevated: #1C2026
+ *   --color-primary: #D7B875
+ *   --color-text: #F4F5F7
+ *   --color-border: #2A2F37
+ */
+
+:root,
+[data-theme="light"] {
+  /* ── Typography Scale ────────────────────────────────────── */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+
+  --text-display: clamp(2.5rem, 4vw, 3rem);        /* 48px */
+  --text-h1: clamp(2rem, 3vw, 2.5rem);             /* 40px */
+  --text-h2: clamp(1.5rem, 2.5vw, 2rem);           /* 32px */
+  --text-h3: clamp(1.25rem, 2vw, 1.5rem);          /* 24px */
+  --text-h4: 1.25rem;                              /* 20px */
+  --text-body-lg: 1.125rem;                        /* 18px */
+  --text-body: 1rem;                               /* 16px */
+  --text-small: 0.875rem;                          /* 14px */
+  --text-caption: 0.75rem;                         /* 12px */
+
+  /* ── Spacing System ─────────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+  --space-11: 80px;
+
+  /* ── Refined Border Radii (R16 strict rules) ─────────────── */
+  --radius-sm: 8px;
+  --radius-btn: 12px;
+  --radius-md: 12px;
+  --radius-card-sm: 14px;
+  --radius-lg: 16px;
+  --radius-card-lg: 20px;
+  --radius-panel: 20px;
+  --radius-pill: 999px;
+
+  --font-numeric: var(--font-mono);
+
+  /* ── Motion Tokens (R16) ────────────────────────────────── */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 350ms;
+  --duration-ambient: 30s;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── R16 Light Palette (Warm Ivory & Deep Forest) ───────── */
+  --color-bg: #EDE9DE;                    /* Primary Background (global) */
+  --color-bg-alt: #E3DDD0;                /* Warm tone accent / nav base */
+  --color-surface: #F7F4EC;               /* Surface */
+  --color-surface-elevated: #FAF8F2;      /* Elevated surface */
+  --color-surface-hover: #ECE6D8;         /* Subtle warm hover */
+  --color-card: #FBF9F3;                  /* Card base */
+  --color-card-border: rgba(24, 34, 30, 0.08);
+  --color-modal: #FBF9F3;
+  --color-tooltip: #18352B;
+
+  --color-text: #18221E;                  /* Primary Text */
+  --color-text-secondary: #69736C;        /* Secondary Text */
+  --color-text-muted: #8B968E;            /* Faint notation & muted info */
+
+  --color-border: rgba(24, 34, 30, 0.10); /* Standard border */
+  --color-border-subtle: rgba(24, 34, 30, 0.06);
+
+  /* Deep Forest Brand Color */
+  --color-forest: #18352B;                /* Primary CTA & Brand */
+  --color-forest-secondary: #285443;
+  --color-forest-muted: rgba(24, 53, 43, 0.08);
+
+  /* Champagne Gold Accent */
+  --color-primary: #B58A3A;               /* Champagne Gold */
+  --color-primary-hover: #9E742E;
+  --color-primary-light: #D6B66A;         /* Light Gold */
+  --color-primary-muted: rgba(181, 138, 58, 0.12);
+
+  /* Status Colors */
+  --color-success: #27815D;               /* Live & Success Green */
+  --color-success-muted: rgba(39, 129, 93, 0.12);
+  --color-warning: #C97A1E;
+  --color-warning-muted: rgba(201, 122, 30, 0.12);
+  --color-danger: #A94B45;                /* Refined Danger */
+  --color-danger-muted: rgba(169, 75, 69, 0.12);
+
+  /* ── Chessboard System ──────────────────────────────────── */
+  --chess-light: #F0D9B5;
+  --chess-dark: #8B6D4C;
+  --chess-selected: rgba(181, 138, 58, 0.45);
+  --chess-last-move: rgba(181, 138, 58, 0.22);
+  --chess-legal-move: rgba(24, 53, 43, 0.28);
+  --chess-check: rgba(169, 75, 69, 0.50);
+  --chess-checkmate: rgba(169, 75, 69, 0.80);
+
+  /* ── Luxury Soft Warm Shadows ────────────────────────────── */
+  --shadow-sm: 0 2px 8px rgba(35, 40, 30, 0.04);
+  --shadow-card: 0 10px 35px rgba(35, 40, 30, 0.06);
+  --shadow-card-hover: 0 14px 42px rgba(35, 40, 30, 0.09);
+  --shadow-md: 0 10px 35px rgba(35, 40, 30, 0.06);
+  --shadow-lg: 0 16px 48px rgba(35, 40, 30, 0.08);
+  --shadow-modal: 0 24px 64px rgba(24, 34, 30, 0.14), 0 0 0 1px var(--color-border);
+}
+
+/* ── Dark Mode: Premium Forest (STRICTLY NO PURE BLACK) ───── */
+[data-theme="dark"],
+.dark {
+  --color-bg: #13201B;                    /* Deep Forest Base (NO #000000, NO #050505) */
+  --color-bg-alt: #172720;
+  --color-surface: #1B2A24;               /* Forest Surface */
+  --color-surface-elevated: #23372F;
+  --color-surface-hover: #263C33;
+  --color-card: #21332B;                  /* Forest Card */
+  --color-card-border: rgba(255, 255, 255, 0.08);
+  --color-modal: #21332B;
+  --color-tooltip: #2A4036;
+
+  --color-text: #F4EFE3;                  /* Warm Ivory Text */
+  --color-text-secondary: #B5BDB5;        /* Muted Forest Gray */
+  --color-text-muted: #828E85;
+
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+
+  --color-forest: #285443;
+  --color-forest-secondary: #396E5A;
+  --color-forest-muted: rgba(40, 84, 67, 0.25);
+
+  --color-primary: #D3AA58;               /* Luminous Champagne Gold */
+  --color-primary-hover: #E0BC6E;
+  --color-primary-light: #ECC980;
+  --color-primary-muted: rgba(211, 170, 88, 0.15);
+
+  --color-success: #2EA878;
+  --color-success-muted: rgba(46, 168, 120, 0.20);
+  --color-warning: #DE9332;
+  --color-warning-muted: rgba(222, 147, 50, 0.20);
+  --color-danger: #C25B55;
+  --color-danger-muted: rgba(194, 91, 85, 0.20);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-card: 0 10px 35px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 14px 42px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 10px 35px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.45);
+  --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--color-border);
+}
+
+/* ── Global Keyframes for Ambient Motion (20–40s) ────────── */
+@keyframes ambientDriftA {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, 30px) scale(1.05); }
+  100% { transform: translate(-25px, 50px) scale(0.97); }
+}
+
+@keyframes ambientDriftB {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-35px, -30px) scale(1.04); }
+  100% { transform: translate(30px, -40px) scale(0.98); }
+}
+
+@keyframes ambientPulse {
+  0% { opacity: 0.04; transform: translate(-50%, -50%) scale(0.97); }
+  50% { opacity: 0.08; transform: translate(-50%, -50%) scale(1.03); }
+  100% { opacity: 0.04; transform: translate(-50%, -50%) scale(0.97); }
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Page Enter Utility ─────────────────────────────────── */
+.animate-page-enter {
+  animation: pageEnter var(--duration-normal) var(--ease-standard) forwards;
+}
+
+/* ── Transition for Color Scheme ────────────────────────── */
+html {
+  transition: background-color 250ms ease, color 250ms ease;
+}
+
+/* ── Reduced Motion Accessibility ────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,85 +1,111 @@
-import Link from "next/link";
-import { Eye, ArrowUpRight } from "lucide-react";
+"use client";
 
-const matches = [
-  {
-    white: "Sagar",
-    black: "Aman",
-    whiteRating: 1518,
-    blackRating: 1472,
-    spectators: 24,
-  },
-  {
-    white: "Rahul",
-    black: "Rohan",
-    whiteRating: 1624,
-    blackRating: 1587,
-    spectators: 11,
-  },
-];
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Eye, ArrowUpRight, Swords } from "lucide-react";
+import { apiFetch } from "@/lib/api";
+
+type ActiveMatch = {
+  id: string;
+  white: string;
+  black: string;
+  whiteRating: number;
+  blackRating: number;
+  spectators: number;
+};
 
 export default function LiveMatches() {
+  const [matches, setMatches] = useState<ActiveMatch[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    apiFetch("/api/games/live/active")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.games)) {
+          setMatches(
+            data.games.map((g: any) => ({
+              id: g.roomId || g._id,
+              white: g.whitePlayerName || "White",
+              black: g.blackPlayerName || "Black",
+              whiteRating: g.whiteRating || 1500,
+              blackRating: g.blackRating || 1500,
+              spectators: g.spectators || 0,
+            }))
+          );
+        }
+      })
+      .catch(() => setMatches([]))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <section>
-      <div className="mb-5 flex items-end justify-between">
+      <div className="mb-4 flex items-end justify-between">
         <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-white/25">
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#B88A32]">
             Happening now
-          </p>
-
-          <h2 className="mt-2 text-xl font-medium tracking-tight">
+          </span>
+          <h2 className="mt-1 text-xl font-serif font-semibold tracking-tight text-[#171A18]">
             Live matches
           </h2>
         </div>
 
         <Link
           href="/watch"
-          className="flex items-center gap-1 text-xs text-white/35 transition-colors hover:text-white"
+          className="flex items-center gap-1 text-xs font-semibold text-[#68706A] transition-colors hover:text-[#171A18]"
         >
           See all
           <ArrowUpRight size={14} />
         </Link>
       </div>
 
-      <div className="space-y-2">
-        {matches.map((match) => (
-          <Link
-            href="/watch"
-            key={`${match.white}-${match.black}`}
-            className="group flex items-center justify-between rounded-2xl border border-white/8 bg-[#11110f] p-4 transition-colors hover:border-white/15 hover:bg-[#141412]"
-          >
-            <div className="flex items-center gap-4">
-              <span className="h-2 w-2 rounded-full bg-red-400" />
-
-              <div>
-                <p className="text-sm font-medium">
-                  {match.white}
-                </p>
-
-                <p className="mt-1 text-xs text-white/30">
-                  {match.whiteRating}
-                </p>
+      <div className="space-y-2.5">
+        {loading ? (
+          <div className="p-6 text-center text-xs text-[#68706A] border border-[rgba(30,30,20,0.08)] rounded-2xl bg-white/85">
+            Checking live arena...
+          </div>
+        ) : matches.length === 0 ? (
+          <div className="p-8 text-center text-xs text-[#68706A] border border-[rgba(30,30,20,0.08)] rounded-2xl bg-white/85 backdrop-blur-md shadow-[0_8px_30px_rgba(35,30,20,0.04)] space-y-2">
+            <p className="text-[#171A18] font-semibold text-sm">The arena is quiet.</p>
+            <p>No active live games right now. Start a match or invite a friend to appear here.</p>
+            <div className="pt-2">
+              <Link
+                href="/play"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#B88A32] hover:underline"
+              >
+                <Swords size={13} />
+                Play a game
+              </Link>
+            </div>
+          </div>
+        ) : (
+          matches.map((match) => (
+            <Link
+              href={`/game/${match.id}`}
+              key={match.id}
+              className="group flex items-center justify-between rounded-2xl border border-[rgba(30,30,20,0.08)] bg-white/90 backdrop-blur-md p-4 transition-all duration-200 hover:border-[#B88A32]/40 hover:bg-[#FAF8F2] hover:shadow-[0_8px_30px_rgba(35,30,20,0.04)]"
+            >
+              <div className="flex items-center gap-4">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <div>
+                  <p className="text-sm font-semibold text-[#171A18]">{match.white}</p>
+                  <p className="mt-0.5 text-xs text-[#68706A] font-mono">{match.whiteRating}</p>
+                </div>
+                <span className="text-xs text-[#68706A]/50 font-serif italic">vs</span>
+                <div>
+                  <p className="text-sm font-semibold text-[#171A18]">{match.black}</p>
+                  <p className="mt-0.5 text-xs text-[#68706A] font-mono">{match.blackRating}</p>
+                </div>
               </div>
 
-              <span className="text-xs text-white/20">vs</span>
-
-              <div>
-                <p className="text-sm font-medium">
-                  {match.black}
-                </p>
-
-                <p className="mt-1 text-xs text-white/30">
-                  {match.blackRating}
-                </p>
+              <div className="flex items-center gap-1.5 text-xs text-[#68706A] font-mono">
+                <Eye size={13} className="text-[#B88A32]" />
+                <span>{match.spectators}</span>
               </div>
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-white/30">
-              <Eye size={14} />
-              {match.spectators}
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))
+        )}
       </div>
     </section>
   );

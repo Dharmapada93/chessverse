@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "migrate": "tsx src/migrations/runner.ts",
+    "seed:demo": "tsx src/scripts/seedDemo.ts",
+    "create:admin": "tsx src/scripts/createAdmin.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -16,9 +19,12 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
     "helmet": "^8.3.0",
+    "ioredis": "^6.0.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.10.0",
+    "openai": "^7.18.0",
     "socket.io": "^4.8.3",
+    "stockfish": "^18.0.8",
     "zod": "^4.6.5"
   },
   "devDependencies": {

@@ -1,31 +1,104 @@
-import { Bell, Search } from "lucide-react";
+"use client";
+
+import { usePathname, useRouter } from "next/navigation";
+import { Search, Sun, Moon } from "lucide-react";
+import NotificationDropdown from "@/components/navigation/NotificationDropdown";
+import UserMenu from "@/components/navigation/UserMenu";
+import { useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function AppHeader() {
+  const pathname = usePathname() || "";
+  const router = useRouter();
+  const { colorMode, toggleColorMode } = useTheme();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const getSectionTitle = () => {
+    if (pathname.startsWith("/play")) return "Play Chess";
+    if (pathname.startsWith("/analysis")) return "AI Analysis";
+    if (pathname.startsWith("/insights")) return "Your Chess Insights";
+    if (pathname.startsWith("/watch")) return "Watch Live Games";
+    if (pathname.startsWith("/puzzles") || pathname.startsWith("/training")) return "Puzzles & Tactics";
+    if (pathname.startsWith("/friends")) return "Friends";
+    if (pathname.startsWith("/games") || pathname.startsWith("/dashboard")) return "Game History";
+    if (pathname.startsWith("/leaderboard")) return "Leaderboard";
+    if (pathname.startsWith("/settings")) return "Settings";
+    if (pathname.startsWith("/profile")) return "Player Profile";
+    if (pathname.startsWith("/admin")) return "Administrative Center";
+    return "ChessVerse";
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/profile/${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
+
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+  const currentHour = new Date().getHours();
+  const greeting = currentHour < 12 ? "Good morning" : currentHour < 18 ? "Good afternoon" : "Good evening";
+
   return (
-    <header className="flex h-20 items-center justify-between border-b border-white/8 px-5 sm:px-8">
-      <div>
-        <p className="text-xs text-white/30">Monday, September 14</p>
-        <h1 className="mt-1 text-lg font-medium tracking-tight">
-          Good morning, Dharmapada.
-        </h1>
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[var(--color-border-subtle)] bg-[#EDE9DE]/92 dark:bg-[#13201B]/92 px-4 sm:px-6 lg:px-8 backdrop-blur-md">
+      {/* Left: Contextual Section Title & Subtitle */}
+      <div className="flex items-center gap-3">
+        <div>
+          <h1 className="text-base sm:text-lg font-serif font-bold tracking-tight text-[#18352B] dark:text-[#F4EFE3] leading-none">
+            {getSectionTitle()}
+          </h1>
+          <span className="text-[10px] text-[#69736C] dark:text-[#B5BDB5] font-medium hidden sm:inline-block mt-1">
+            {greeting} · {currentDate}
+          </span>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <button
-          className="hidden h-9 w-9 items-center justify-center rounded-full border border-white/8 text-white/40 transition-colors hover:bg-white/[0.05] hover:text-white sm:flex"
-          aria-label="Search"
-        >
-          <Search size={17} />
-        </button>
+      {/* Right Controls: Search, Notifications, Profile Button */}
+      <div className="flex items-center gap-3">
+        {searchOpen ? (
+          <form onSubmit={handleSearchSubmit} className="relative flex items-center">
+            <input
+              type="text"
+              autoFocus
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search player username..."
+              onBlur={() => !searchQuery && setSearchOpen(false)}
+              className="w-48 sm:w-64 rounded-full border border-[#B58A3A]/60 bg-[#F7F4EC] dark:bg-[#1B2A24] py-1.5 pl-8 pr-3 text-xs text-[#18221E] dark:text-[#F4EFE3] placeholder-[#69736C] outline-none transition focus:border-[#B58A3A] focus:ring-1 focus:ring-[#B58A3A] shadow-xs"
+            />
+            <Search size={14} className="absolute left-2.5 text-[#69736C]" />
+          </form>
+        ) : (
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(24,34,30,0.10)] dark:border-white/10 bg-[#F7F4EC] dark:bg-[#1B2A24] text-[#69736C] dark:text-[#B5BDB5] transition-colors hover:border-[#B58A3A]/40 hover:bg-[#FBF9F3] hover:text-[#18352B] dark:hover:text-[#F4EFE3] cursor-pointer shadow-xs"
+            aria-label="Search players"
+            title="Search players"
+          >
+            <Search size={15} />
+          </button>
+        )}
 
         <button
-          className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/8 text-white/40 transition-colors hover:bg-white/[0.05] hover:text-white"
-          aria-label="Notifications"
+          type="button"
+          onClick={toggleColorMode}
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(24,34,30,0.10)] dark:border-white/10 bg-[#F7F4EC] dark:bg-[#1B2A24] text-[#69736C] dark:text-[#D3AA58] transition-all hover:border-[#B58A3A]/40 hover:bg-[#FBF9F3] hover:text-[#18352B] dark:hover:text-[#F4EFE3] cursor-pointer shadow-xs"
+          aria-label={`Switch to ${colorMode === "dark" ? "light" : "dark"} mode`}
+          title={`Switch to ${colorMode === "dark" ? "Light Mode (Warm Ivory)" : "Dark Mode (Deep Forest)"}`}
         >
-          <Bell size={17} />
-
-          <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#d7b875]" />
+          {colorMode === "dark" ? <Sun size={15} /> : <Moon size={15} />}
         </button>
+
+        <NotificationDropdown />
+
+        <UserMenu />
       </div>
     </header>
   );

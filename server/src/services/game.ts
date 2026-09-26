@@ -4,6 +4,7 @@ import { Chess } from "chess.js";
 import { Game } from "../models/Game.js";
 import { Room } from "../models/Room.js";
 import { User } from "../models/User.js";
+import { logger } from "../utils/logger.js";
 
 export async function createGameForRoom(
   roomId: string,
@@ -65,6 +66,12 @@ export async function createGameForRoom(
       lastClockUpdateAt:
         new Date(),
     });
+
+  logger.info("game_created", {
+    gameId: game._id.toString(),
+    roomId: room._id.toString(),
+    rated: room.rated,
+  });
 
   return game;
 }
