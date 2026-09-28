@@ -1,7 +1,7 @@
 import type { Server, Socket } from "socket.io";
 import mongoose from "mongoose";
 import { Chess } from "chess.js";
-import { Game, type IGame } from "../models/Game.js";
+import { Game, type IGame, type GameDocument } from "../models/Game.js";
 import { validateMove, type PlayerColor } from "../services/chessEngine.js";
 import { getCurrentClock } from "../services/gameClock.js";
 import { finishGame } from "../services/gameResult.js";
@@ -13,7 +13,7 @@ type MovePayload = {
   promotion?: string;
 };
 
-export async function getGame(gameId: string): Promise<IGame | null> {
+export async function getGame(gameId: string): Promise<GameDocument | null> {
   if (!gameId) return null;
 
   if (mongoose.Types.ObjectId.isValid(gameId)) {
@@ -27,7 +27,7 @@ export async function getGame(gameId: string): Promise<IGame | null> {
   }).sort({ createdAt: -1 });
 }
 
-export function serializeGame(game: IGame) {
+export function serializeGame(game: GameDocument) {
   const currentFen =
     game.fen ||
     game.currentFen ||
@@ -59,7 +59,7 @@ export function serializeGame(game: IGame) {
       : Date.now();
 
   return {
-    gameId: game._id.toString(),
+    gameId: game._id ? game._id.toString() : game.roomId,
     roomId: game.roomId,
     fen: currentFen,
     turn: derivedTurn,

@@ -7,7 +7,7 @@ import {
   userSockets,
 } from "./socket.js";
 import { User } from "../models/User.js";
-import { Game } from "../models/Game.js";
+import { Game, type GameDocument } from "../models/Game.js";
 
 // Disconnect grace timers: userId -> NodeJS.Timeout (R4.10)
 const disconnectGraceTimers = new Map<string, NodeJS.Timeout>();
@@ -30,7 +30,7 @@ export function registerSocialSocket(io: Server, socket: Socket) {
         $or: [{ whitePlayerId: userId }, { blackPlayerId: userId }],
       })
         .select("_id roomId whitePlayerId blackPlayerId whitePlayerName blackPlayerName")
-        .then((activeGame) => {
+        .then((activeGame: GameDocument | null) => {
           const payload = {
             userId,
             online: true,

@@ -1,4 +1,4 @@
-import type { Server } from "socket.io";
+import type { Server, Socket } from "socket.io";
 import crypto from "node:crypto";
 import { Chess } from "chess.js";
 import {
@@ -237,7 +237,7 @@ export function registerSocketHandlers(io: Server) {
     }
   }, 1000);
 
-  io.on("connection", (socket) => {
+  io.on("connection", (socket: Socket) => {
     logger.info("websocket_connected", {
       socketId: socket.id,
       userId: socket.data.userId,

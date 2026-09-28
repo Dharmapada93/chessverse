@@ -1,10 +1,11 @@
 import mongoose, {
   Schema,
   model,
-  type Document,
+  type HydratedDocument,
+  type Model,
 } from "mongoose";
 
-export interface IGame extends Document {
+export interface IGame {
   roomId: string;
 
   whitePlayerId?: string;
@@ -50,6 +51,7 @@ export interface IGame extends Document {
     | null;
 
   winnerId?: mongoose.Types.ObjectId | string | null;
+  winner?: "white" | "black" | "draw" | string | null;
 
   initialFen: string;
   currentFen: string;
@@ -76,6 +78,7 @@ export interface IGame extends Document {
 
   startedAt?: Date;
   finishedAt?: Date;
+  endedAt?: Date;
 
   moves: {
     from: string;
@@ -101,6 +104,8 @@ export interface IGame extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type GameDocument = HydratedDocument<IGame>;
 
 const gameSchema =
   new Schema<IGame>(
@@ -200,6 +205,10 @@ const gameSchema =
         ref: "User",
       },
 
+      winner: {
+        type: String,
+      },
+
       initialFen: {
         type: String,
         required: true,
@@ -270,6 +279,10 @@ const gameSchema =
       },
 
       finishedAt: {
+        type: Date,
+      },
+
+      endedAt: {
         type: Date,
       },
 
@@ -355,3 +368,5 @@ export const Game =
     "Game",
     gameSchema,
   );
+
+export default Game;
