@@ -41,7 +41,7 @@ export default function UserMenu({ className = "" }: UserMenuProps) {
         <button
           type="button"
           onClick={openLogin}
-          className="flex items-center gap-1.5 rounded-[var(--radius-btn)] border border-[rgba(24,34,30,0.14)] dark:border-white/10 bg-transparent px-3 py-1.5 text-xs font-semibold text-[#18352B] dark:text-[#F4EFE3] hover:bg-[#18352B]/[0.05] dark:hover:bg-white/[0.05] transition duration-150 cursor-pointer shadow-xs"
+          className="h-9 px-3.5 inline-flex items-center justify-center gap-1.5 rounded-[10px] border border-[rgba(24,34,30,0.14)] dark:border-white/10 bg-transparent text-xs font-semibold text-[#18352B] dark:text-[#F4EFE3] hover:bg-[#18352B]/[0.05] dark:hover:bg-white/[0.05] transition duration-150 cursor-pointer shadow-xs whitespace-nowrap"
         >
           <LogIn size={13} className="text-[#69736C] dark:text-[#B5BDB5]" />
           <span>Log In</span>
@@ -49,7 +49,7 @@ export default function UserMenu({ className = "" }: UserMenuProps) {
         <button
           type="button"
           onClick={openRegister}
-          className="flex items-center gap-1.5 rounded-[var(--radius-btn)] bg-[#B58A3A] px-3.5 py-1.5 text-xs font-bold text-[#18352B] hover:bg-[#D6B66A] transition duration-150 shadow-xs cursor-pointer"
+          className="h-9 px-4 inline-flex items-center justify-center gap-1.5 rounded-[10px] bg-[#B58A3A] hover:bg-[#D6B66A] text-xs font-bold text-[#18352B] transition duration-150 shadow-xs cursor-pointer whitespace-nowrap"
         >
           <UserPlus size={13} />
           <span>Create Account</span>

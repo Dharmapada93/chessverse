@@ -239,11 +239,11 @@ export default function HomePage() {
               </div>
 
               {/* Primary Actions */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <button
                   type="button"
                   onClick={handleStartPlay}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-[12px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] py-3.5 px-6 text-xs font-bold uppercase tracking-wider text-[#F7F4EC] hover:-translate-y-0.5 transition duration-150 shadow-[0_6px_20px_rgba(24,53,43,0.18)] cursor-pointer"
+                  className="w-full h-12 inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] px-5 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#F7F4EC] hover:-translate-y-0.5 active:translate-y-0 transition duration-150 shadow-[0_6px_20px_rgba(24,53,43,0.18)] cursor-pointer"
                 >
                   <Swords size={16} />
                   <span>Find Opponent ({selectedTimeControl.label})</span>
@@ -251,9 +251,9 @@ export default function HomePage() {
 
                 <Link
                   href="/play?mode=friends"
-                  className="flex items-center justify-center gap-2 rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-[#F7F4EC] dark:bg-[#21332B] py-3.5 px-5 text-xs font-semibold text-[#18221E] dark:text-[#F4EFE3] hover:bg-[#EDE9DE] dark:hover:bg-[#1B2A24] hover:-translate-y-0.5 transition duration-150 shadow-xs cursor-pointer"
+                  className="w-full h-12 inline-flex items-center justify-center gap-2 rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-[#F7F4EC] dark:bg-[#21332B] px-5 text-xs sm:text-sm font-semibold text-[#18221E] dark:text-[#F4EFE3] hover:bg-[#EDE9DE] dark:hover:bg-[#1B2A24] hover:-translate-y-0.5 active:translate-y-0 transition duration-150 shadow-xs cursor-pointer"
                 >
-                  <Users size={15} />
+                  <Users size={16} />
                   <span>Play With Friends</span>
                 </Link>
               </div>

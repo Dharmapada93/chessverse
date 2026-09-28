@@ -75,24 +75,24 @@ export default function AnalysisIndexRoute() {
                 <p className="text-xs sm:text-sm text-[#69736C] dark:text-[#B5BDB5] leading-relaxed max-w-md mx-auto">
                   Complete a match in matchmaking or against friends to unlock full AI analysis, Stockfish evaluations, accuracy metrics, and interactive coach feedback.
                 </p>
-                <div className="pt-3 flex flex-wrap items-center justify-center gap-3">
+                <div className="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto w-full">
                   <button
                     type="button"
                     onClick={() => {
                       setLatestGameId("demo-game");
                       setHasGames(true);
                     }}
-                    className="inline-flex items-center gap-2 rounded-[12px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] px-6 py-3 text-xs font-bold uppercase tracking-wider text-[#F7F4EC] hover:-translate-y-0.5 transition duration-180 shadow-sm cursor-pointer"
+                    className="w-full h-11 sm:h-12 inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] px-4 text-xs sm:text-sm font-semibold text-[#F7F4EC] hover:-translate-y-0.5 active:translate-y-0 transition duration-150 shadow-sm cursor-pointer whitespace-nowrap"
                   >
-                    <Bot size={15} />
-                    <span>Analyze Master Demo Game</span>
+                    <Bot size={16} />
+                    <span>Analyze Demo Game</span>
                   </button>
 
                   <Link
                     href="/play"
-                    className="inline-flex items-center gap-2 rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-white/10 bg-[#F7F4EC] dark:bg-[#1B2A24] px-6 py-3 text-xs font-bold uppercase tracking-wider text-[#18221E] dark:text-[#F4EFE3] hover:bg-[#EDE9DE] hover:-translate-y-0.5 transition duration-180 shadow-sm"
+                    className="w-full h-11 sm:h-12 inline-flex items-center justify-center gap-2 rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-white/10 bg-[#F7F4EC] dark:bg-[#1B2A24] px-4 text-xs sm:text-sm font-semibold text-[#18221E] dark:text-[#F4EFE3] hover:bg-[#EDE9DE] hover:-translate-y-0.5 active:translate-y-0 transition duration-150 shadow-sm whitespace-nowrap"
                   >
-                    <Swords size={15} />
+                    <Swords size={16} />
                     <span>Play Match</span>
                   </Link>
                 </div>

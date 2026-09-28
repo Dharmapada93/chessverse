@@ -176,10 +176,10 @@ export default function PuzzlesHubPage() {
                 <button
                   type="button"
                   onClick={handleNextPuzzle}
-                  className="w-full flex items-center justify-center gap-2 rounded-[14px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] py-3.5 text-xs font-bold uppercase tracking-wider text-[#F7F4EC] hover:-translate-y-0.5 transition shadow-xs cursor-pointer"
+                  className="w-full h-12 inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] px-5 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#F7F4EC] hover:-translate-y-0.5 active:translate-y-0 transition shadow-xs cursor-pointer"
                 >
                   <span>Next Tactical Puzzle</span>
-                  <ArrowRight size={14} />
+                  <ArrowRight size={15} />
                 </button>
               </div>
             </div>

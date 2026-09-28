@@ -328,7 +328,7 @@ function PlayContent() {
                   <span>The Grand Chess Room</span>
                 </div>
 
-                <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#18221E] dark:text-[#F4EFE3] leading-tight">
+                <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#18221E] dark:text-[#F4EFE3] leading-[1.18] sm:leading-[1.2] pt-1.5 pb-0.5">
                   Welcome to ChessVerse.
                 </h1>
 
@@ -489,7 +489,7 @@ function PlayContent() {
               </div>
 
               {/* Time Control Cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
                 {TIME_CONTROLS.map((tc) => {
                   const isSelected = selectedTimeControl.id === tc.id;
                   return (
@@ -497,7 +497,7 @@ function PlayContent() {
                       key={tc.id}
                       type="button"
                       onClick={() => setSelectedTimeControl(tc)}
-                      className={`flex flex-col items-center justify-center rounded-[14px] border py-4 px-3 text-center transition-all duration-150 cursor-pointer ${
+                      className={`flex flex-col items-center justify-center rounded-[14px] border py-3.5 sm:py-4 px-3 text-center transition-all duration-150 cursor-pointer min-h-[92px] sm:min-h-[100px] last:col-span-2 sm:last:col-span-1 ${
                         isSelected
                           ? "border-[#B58A3A] bg-[#B58A3A]/10 text-[#18221E] dark:text-[#F4EFE3] dark:border-[#D3AA58] dark:bg-[#D3AA58]/15 shadow-[0_2px_12px_rgba(181,138,58,0.15)] font-semibold"
                           : "border-[rgba(24,34,30,0.08)] dark:border-[rgba(255,255,255,0.08)] bg-[#FBF9F3] dark:bg-[#21332B] text-[#69736C] dark:text-[#B5BDB5] hover:bg-[#F7F4EC] dark:hover:bg-[#1B2A24] hover:text-[#18221E] dark:hover:text-[#F4EFE3]"
@@ -506,7 +506,7 @@ function PlayContent() {
                       <span className="text-[10px] font-bold uppercase tracking-wider text-[#69736C] dark:text-[#B5BDB5]">
                         {tc.name}
                       </span>
-                      <span className="mt-1 font-mono text-2xl font-bold text-[#18221E] dark:text-[#F4EFE3]">
+                      <span className="mt-1 font-mono text-xl sm:text-2xl font-bold text-[#18221E] dark:text-[#F4EFE3]">
                         {tc.label}
                       </span>
                       <span className="mt-1 text-[10px] text-[#69736C] dark:text-[#B5BDB5]">
@@ -518,11 +518,11 @@ function PlayContent() {
               </div>
 
               {/* Primary Matchmaking CTA */}
-              <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <button
                   type="button"
                   onClick={handleStartMatchmaking}
-                  className="flex w-full sm:w-auto flex-1 items-center justify-center gap-2.5 rounded-[12px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] py-4 px-8 text-xs font-bold uppercase tracking-wider text-[#F7F4EC] shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 cursor-pointer"
+                  className="w-full h-12 sm:h-13 inline-flex items-center justify-center gap-2.5 rounded-[12px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] px-5 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#F7F4EC] shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 cursor-pointer"
                 >
                   <Swords size={18} />
                   <span>Find Opponent ({selectedTimeControl.name} {selectedTimeControl.label})</span>
@@ -531,9 +531,9 @@ function PlayContent() {
                 <button
                   type="button"
                   onClick={() => setActiveMode("friends")}
-                  className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-[#F7F4EC] dark:bg-[#1B2A24] py-4 px-6 text-xs font-semibold text-[#18221E] dark:text-[#F4EFE3] hover:bg-[#EDE9DE] hover:border-[rgba(24,34,30,0.22)] hover:-translate-y-0.5 active:translate-y-0 transition duration-150 cursor-pointer shadow-xs"
+                  className="w-full h-12 sm:h-13 inline-flex items-center justify-center gap-2.5 rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-[#F7F4EC] dark:bg-[#1B2A24] px-5 text-xs sm:text-sm font-semibold text-[#18221E] dark:text-[#F4EFE3] hover:bg-[#EDE9DE] hover:border-[rgba(24,34,30,0.22)] hover:-translate-y-0.5 active:translate-y-0 transition duration-150 cursor-pointer shadow-xs"
                 >
-                  <Users size={16} />
+                  <Users size={18} />
                   <span>Play a Friend</span>
                 </button>
               </div>
@@ -572,23 +572,23 @@ function PlayContent() {
                     </div>
                   </div>
 
-                  <div className="mt-4 flex items-center gap-3">
+                  <div className="mt-4 flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
                     <button
                       type="button"
                       onClick={() => {
                         setAiGame(new Chess());
                         setAiStatus("Your turn to move");
                       }}
-                      className="flex items-center gap-2 rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-[#F7F4EC] dark:bg-[#1B2A24] px-4 py-2 text-xs font-semibold text-[#18221E] dark:text-[#F4EFE3] hover:bg-[#EDE9DE] transition shadow-xs cursor-pointer"
+                      className="flex-1 sm:flex-initial h-10 inline-flex items-center justify-center gap-2 rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-[#F7F4EC] dark:bg-[#1B2A24] px-4 text-xs font-semibold text-[#18221E] dark:text-[#F4EFE3] hover:bg-[#EDE9DE] transition shadow-xs cursor-pointer"
                     >
-                      <RotateCcw size={13} />
+                      <RotateCcw size={14} />
                       <span>Reset Board</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setPlayerColor(playerColor === "white" ? "black" : "white")}
-                      className="rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-[#F7F4EC] dark:bg-[#1B2A24] px-4 py-2 text-xs font-medium text-[#69736C] dark:text-[#B5BDB5] hover:text-[#18221E] dark:hover:text-[#F4EFE3] hover:bg-[#EDE9DE] transition shadow-xs cursor-pointer"
+                      className="flex-1 sm:flex-initial h-10 inline-flex items-center justify-center rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-[#F7F4EC] dark:bg-[#1B2A24] px-4 text-xs font-semibold text-[#69736C] dark:text-[#B5BDB5] hover:text-[#18221E] dark:hover:text-[#F4EFE3] hover:bg-[#EDE9DE] transition shadow-xs cursor-pointer"
                     >
                       Flip Side ({playerColor === "white" ? "White" : "Black"})
                     </button>
@@ -660,8 +660,9 @@ function PlayContent() {
                       setAiGame(new Chess());
                       setAiStatus("Your turn to move");
                     }}
-                    className="w-full flex items-center justify-center gap-2 rounded-[12px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] py-3.5 text-xs font-bold uppercase tracking-wider text-[#F7F4EC] shadow-xs hover:-translate-y-0.5 transition cursor-pointer"
+                    className="w-full h-12 inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] px-5 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#F7F4EC] shadow-xs hover:-translate-y-0.5 active:translate-y-0 transition cursor-pointer"
                   >
+                    <Bot size={18} />
                     <span>Start Practice Session</span>
                   </button>
                 </div>
@@ -682,21 +683,21 @@ function PlayContent() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <Link
                     href="/friends"
-                    className="flex items-center gap-1.5 rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-[#F7F4EC] dark:bg-[#1B2A24] px-3.5 py-2 text-xs font-semibold text-[#18221E] dark:text-[#F4EFE3] hover:bg-[#EDE9DE] transition shadow-xs"
+                    className="h-10 inline-flex items-center gap-1.5 rounded-[12px] border border-[rgba(24,34,30,0.12)] dark:border-[rgba(255,255,255,0.1)] bg-[#F7F4EC] dark:bg-[#1B2A24] px-4 text-xs font-semibold text-[#18221E] dark:text-[#F4EFE3] hover:bg-[#EDE9DE] transition shadow-xs"
                   >
-                    <Search size={13} />
+                    <Search size={14} />
                     <span>Find Friends</span>
                   </Link>
 
                   <button
                     type="button"
                     onClick={() => setIsInviteOpen(true)}
-                    className="flex items-center gap-1.5 rounded-[12px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] px-3.5 py-2 text-xs font-bold text-[#F7F4EC] transition shadow-xs cursor-pointer"
+                    className="h-10 inline-flex items-center gap-1.5 rounded-[12px] bg-[#18352B] hover:bg-[#285443] dark:bg-[#D3AA58] dark:hover:bg-[#B58A3A] dark:text-[#13201B] px-4 text-xs font-bold text-[#F7F4EC] transition shadow-xs cursor-pointer"
                   >
-                    <UserPlus size={13} />
+                    <UserPlus size={14} />
                     <span>Invite Friends</span>
                   </button>
                 </div>

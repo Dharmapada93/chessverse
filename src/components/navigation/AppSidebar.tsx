@@ -128,7 +128,7 @@ export default function AppSidebar() {
             <button
               type="button"
               onClick={openLogin}
-              className="flex-1 flex items-center justify-center gap-1.5 rounded-[var(--radius-btn)] border border-[rgba(24,34,30,0.12)] dark:border-white/10 bg-transparent py-2 text-xs font-semibold text-[#18352B] dark:text-[#F4EFE3] hover:bg-[#18352B]/[0.05] dark:hover:bg-white/[0.05] transition cursor-pointer"
+              className="flex-1 h-9 inline-flex items-center justify-center gap-1.5 rounded-[10px] border border-[rgba(24,34,30,0.12)] dark:border-white/10 bg-transparent text-xs font-semibold text-[#18352B] dark:text-[#F4EFE3] hover:bg-[#18352B]/[0.05] dark:hover:bg-white/[0.05] transition cursor-pointer"
             >
               <LogIn size={13} />
               <span>Log In</span>
@@ -136,7 +136,7 @@ export default function AppSidebar() {
             <button
               type="button"
               onClick={openRegister}
-              className="flex-1 flex items-center justify-center gap-1.5 rounded-[var(--radius-btn)] bg-[#B58A3A] py-2 text-xs font-bold text-[#18352B] hover:bg-[#D6B66A] transition cursor-pointer shadow-xs"
+              className="flex-1 h-9 inline-flex items-center justify-center gap-1.5 rounded-[10px] bg-[#B58A3A] hover:bg-[#D6B66A] text-xs font-bold text-[#18352B] transition cursor-pointer shadow-xs"
             >
               <UserPlus size={13} />
               <span>Register</span>
