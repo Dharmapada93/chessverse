@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
+import dns from "node:dns";
 import { logger } from "../utils/logger.js";
 
 export async function connectDatabase() {
-  const mongoUri = process.env.MONGODB_URI || process.env.DATABASE_URL;
+  const mongoUri = process.env.DATABASE_URL || process.env.MONGODB_URI;
 
   if (!mongoUri) {
     logger.error("database_config_missing", {
@@ -13,10 +14,32 @@ export async function connectDatabase() {
     );
   }
 
+  // Gracefully handle local DNS SRV resolution issues with mongodb+srv
+  if (mongoUri.startsWith("mongodb+srv://")) {
+    try {
+      const hostname = new URL(mongoUri).hostname;
+      await dns.promises.resolveSrv(`_mongodb._tcp.${hostname}`);
+    } catch {
+      try {
+        dns.setServers(["[2001:4860:4860::6464]"]);
+        const hostname = new URL(mongoUri).hostname;
+        await dns.promises.resolveSrv(`_mongodb._tcp.${hostname}`);
+      } catch {
+        try {
+          dns.setServers(["8.8.8.8", "1.1.1.1"]);
+        } catch {}
+      }
+    }
+  }
+
   mongoose.connection.on("connected", () => {
     logger.info("database_connected", {
       databaseName: mongoose.connection.name || "chessverse",
     });
+    console.log(`\n========================================`);
+    console.log(`MongoDB connected successfully`);
+    console.log(`Database: ${mongoose.connection.name || "chessverse"}`);
+    console.log(`========================================\n`);
   });
 
   mongoose.connection.on("error", (err) => {
@@ -31,7 +54,7 @@ export async function connectDatabase() {
 
   try {
     await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 15000,
       maxPoolSize: 20,
       minPoolSize: 2,
     });
