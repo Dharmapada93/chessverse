@@ -19,7 +19,40 @@ export const ALLOWED_ORIGINS = new Set<string>([
   "http://localhost:3000",
   "https://chessverse.app",
   "https://www.chessverse.app",
+  "https://chessverse-eosin.vercel.app",
 ]);
+
+/**
+ * Validates whether an incoming HTTP origin or referer is authorized.
+ * Permitted:
+ * - Direct/server-to-server calls (no origin)
+ * - Explicitly configured ALLOWED_ORIGINS & CLIENT_URL
+ * - Any Vercel deployment (*.vercel.app)
+ * - Official chessverse domain (*.chessverse.app)
+ * - Local development ports (localhost, 127.0.0.1)
+ */
+export function isAllowedOrigin(origin?: string): boolean {
+  if (!origin) return true;
+  if (ALLOWED_ORIGINS.has(origin)) return true;
+
+  try {
+    const url = new URL(origin);
+    const hostname = url.hostname.toLowerCase();
+
+    // Allow all Vercel previews and production deployments
+    if (hostname.endsWith(".vercel.app")) return true;
+
+    // Allow primary and subdomain chessverse deployments
+    if (hostname === "chessverse.app" || hostname.endsWith(".chessverse.app")) return true;
+
+    // Allow local development
+    if (hostname === "localhost" || hostname === "127.0.0.1") return true;
+  } catch {
+    return false;
+  }
+
+  return false;
+}
 
 /**
  * State-changing mutation CSRF / Origin validation middleware.
@@ -41,7 +74,7 @@ export function verifyOriginCsrf(req: Request, res: Response, next: NextFunction
   const origin = req.headers.origin || (req.headers.referer ? new URL(req.headers.referer).origin : undefined);
 
   if (hasSessionCookie) {
-    if (!origin || !ALLOWED_ORIGINS.has(origin)) {
+    if (!origin || !isAllowedOrigin(origin)) {
       return res.status(403).json({
         success: false,
         message: "Request origin rejected by CSRF security policy.",

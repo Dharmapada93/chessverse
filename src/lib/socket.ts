@@ -1,8 +1,33 @@
 import { io } from "socket.io-client";
 
-const SOCKET_URL =
-  process.env.NEXT_PUBLIC_SOCKET_URL ||
-  "http://localhost:4000";
+const PRODUCTION_RENDER_SOCKET = "https://chessverse-backend-g26z.onrender.com";
+
+export function getSocketUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
+  if (envUrl && !envUrl.includes("api.chessverse.app")) {
+    if (typeof window !== "undefined") {
+      const host = window.location.hostname;
+      if (host === "localhost" || host === "127.0.0.1") {
+        return envUrl.replace(/\/+$/, "");
+      }
+      if (envUrl.includes("localhost") || envUrl.includes("127.0.0.1")) {
+        return PRODUCTION_RENDER_SOCKET;
+      }
+    }
+    return envUrl.replace(/\/+$/, "");
+  }
+
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host !== "localhost" && host !== "127.0.0.1") {
+      return PRODUCTION_RENDER_SOCKET;
+    }
+  }
+
+  return process.env.NODE_ENV === "production" ? PRODUCTION_RENDER_SOCKET : "http://localhost:4000";
+}
+
+const SOCKET_URL = getSocketUrl();
 
 export const socket = io(SOCKET_URL, {
   autoConnect: false,
@@ -60,4 +85,3 @@ class EventDeduplicator {
 }
 
 export const eventDeduplicator = new EventDeduplicator();
-

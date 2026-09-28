@@ -154,7 +154,7 @@ export default function NotificationDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-12 z-50 w-80 sm:w-96 rounded-2xl border border-[rgba(30,30,20,0.12)] bg-[#FFFFFF] p-4 shadow-[0_16px_50px_rgba(35,30,20,0.10)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 text-[#171A18]">
+        <div className="absolute right-0 top-12 z-50 w-[calc(100vw-24px)] max-w-sm sm:w-96 rounded-2xl border border-[rgba(30,30,20,0.12)] bg-[#FFFFFF] p-4 shadow-[0_16px_50px_rgba(35,30,20,0.10)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 text-[#171A18]">
           <div className="flex items-center justify-between border-b border-[rgba(30,30,20,0.08)] pb-3">
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-semibold text-[#171A18]">Notifications</h3>

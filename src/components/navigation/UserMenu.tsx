@@ -41,7 +41,7 @@ export default function UserMenu({ className = "" }: UserMenuProps) {
         <button
           type="button"
           onClick={openLogin}
-          className="h-8 sm:h-9 px-2.5 sm:px-3.5 inline-flex items-center justify-center gap-1 sm:gap-1.5 rounded-[10px] border border-[rgba(24,34,30,0.14)] dark:border-white/10 bg-transparent text-xs font-semibold text-[#18352B] dark:text-[#F4EFE3] hover:bg-[#18352B]/[0.05] dark:hover:bg-white/[0.05] transition duration-150 cursor-pointer shadow-xs whitespace-nowrap"
+          className="h-8 sm:h-8.5 px-3 sm:px-3.5 inline-flex items-center justify-center gap-1.5 rounded-[9px] border border-[rgba(24,34,30,0.14)] dark:border-white/10 bg-transparent text-xs font-semibold text-[#18352B] dark:text-[#F4EFE3] hover:bg-[#18352B]/[0.05] dark:hover:bg-white/[0.05] transition duration-150 cursor-pointer shadow-xs whitespace-nowrap"
         >
           <LogIn size={13} className="text-[#69736C] dark:text-[#B5BDB5]" />
           <span>Log In</span>
@@ -49,11 +49,10 @@ export default function UserMenu({ className = "" }: UserMenuProps) {
         <button
           type="button"
           onClick={openRegister}
-          className="h-8 sm:h-9 px-2.5 sm:px-4 inline-flex items-center justify-center gap-1 sm:gap-1.5 rounded-[10px] bg-[#B58A3A] hover:bg-[#D6B66A] text-xs font-bold text-[#18352B] transition duration-150 shadow-xs cursor-pointer whitespace-nowrap"
+          className="h-8 sm:h-8.5 px-3 sm:px-3.5 inline-flex items-center justify-center gap-1.5 rounded-[9px] bg-[#B58A3A] hover:bg-[#C49843] text-xs font-semibold text-[#18221E] transition duration-150 shadow-xs cursor-pointer whitespace-nowrap"
         >
           <UserPlus size={13} />
-          <span className="sm:hidden">Sign Up</span>
-          <span className="hidden sm:inline">Create Account</span>
+          <span>Sign Up</span>
         </button>
       </div>
     );

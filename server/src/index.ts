@@ -33,7 +33,7 @@ import adminRoutes from "./routes/admin.js";
 import announcementRoutes from "./routes/announcements.js";
 import healthRoutes from "./routes/health.js";
 import { globalErrorHandler } from "./middleware/errorHandler.js";
-import { verifyOriginCsrf, ALLOWED_ORIGINS } from "./middleware/csrf.js";
+import { verifyOriginCsrf, ALLOWED_ORIGINS, isAllowedOrigin } from "./middleware/csrf.js";
 import { telemetryMiddleware } from "./middleware/telemetry.js";
 import { registerSocketHandlers } from "./socket/socket.js";
 import { Session } from "./models/Session.js";
@@ -97,10 +97,10 @@ app.use("/api", apiLimiter);
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || ALLOWED_ORIGINS.has(origin)) {
+      if (isAllowedOrigin(origin)) {
         return callback(null, true);
       }
-      return callback(new Error(`Origin ${origin} not allowed by CORS`));
+      return callback(null, false);
     },
     credentials: true,
   }),
@@ -143,10 +143,10 @@ app.use(globalErrorHandler);
 export const io = new Server(httpServer, {
   cors: {
     origin: (origin, callback) => {
-      if (!origin || ALLOWED_ORIGINS.has(origin)) {
+      if (isAllowedOrigin(origin)) {
         return callback(null, true);
       }
-      return callback(new Error(`Origin ${origin} not allowed by CORS`));
+      return callback(null, false);
     },
     credentials: true,
   },
