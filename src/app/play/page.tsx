@@ -306,13 +306,13 @@ function PlayContent() {
   const onlineFriends = friends.filter((f) => f.online);
 
   return (
-    <div className="flex min-h-screen bg-transparent text-[#18221E] dark:text-[#F4EFE3] animate-pageEnter">
+    <div className="flex min-h-screen bg-transparent text-[#18221E] dark:text-[#F4EFE3] animate-pageEnter overflow-x-hidden max-w-full">
       <AppSidebar />
 
-      <div className="min-w-0 flex-1 pb-16 md:pb-0">
+      <div className="min-w-0 flex-1 pb-16 md:pb-0 overflow-x-hidden max-w-full">
         <AppHeader />
 
-        <main className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 space-y-10">
+        <main className="mx-auto max-w-[1440px] px-3 sm:px-8 py-6 sm:py-8 space-y-8 sm:space-y-10 overflow-x-hidden w-full">
           {/* ═══════════════════════════════════════════════ */}
           {/* EDITORIAL HERO SECTION                          */}
           {/* ═══════════════════════════════════════════════ */}

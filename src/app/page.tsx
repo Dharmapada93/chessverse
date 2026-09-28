@@ -145,15 +145,15 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-transparent text-[#18221E] dark:text-[#F4EFE3] animate-pageEnter">
+    <div className="flex min-h-screen bg-transparent text-[#18221E] dark:text-[#F4EFE3] animate-pageEnter overflow-x-hidden max-w-full">
       {/* Desktop Global Navigation Sidebar */}
       <AppSidebar />
 
-      <div className="min-w-0 flex-1 flex flex-col pb-16 md:pb-0">
+      <div className="min-w-0 flex-1 flex flex-col pb-16 md:pb-0 overflow-x-hidden max-w-full">
         {/* Contextual Top Bar */}
         <AppHeader />
 
-        <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 space-y-10 flex-1">
+        <main className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8 sm:space-y-10 flex-1 overflow-x-hidden">
           {/* Active Game Resume Banner (Real state only) */}
           {activeGame && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[14px] border border-[#27815D]/30 bg-[#27815D]/10 p-4 sm:px-6 shadow-[0_4px_20px_rgba(39,129,93,0.08)]">
@@ -192,14 +192,14 @@ export default function HomePage() {
           )}
 
           {/* ── SECTION 1: EDITORIAL CHESS HERO & BOARD CENTERPIECE ── */}
-          <section className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-10 items-center border-b border-[rgba(24,34,30,0.08)] dark:border-[rgba(255,255,255,0.08)] pb-12">
+          <section className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-8 lg:gap-10 items-center border-b border-[rgba(24,34,30,0.08)] dark:border-[rgba(255,255,255,0.08)] pb-10 sm:pb-12 overflow-hidden">
             {/* Left: Product Manifesto & Time Control Selector */}
-            <div className="space-y-6">
+            <div className="space-y-6 min-w-0">
               <div className="space-y-2">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#B58A3A] dark:text-[#D3AA58] block">
                   CHESSVERSE
                 </span>
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold tracking-tight text-[#18221E] dark:text-[#F4EFE3] leading-[1.15]">
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold tracking-tight text-[#18221E] dark:text-[#F4EFE3] leading-[1.18] break-words">
                   Play chess with clarity<br />and precision.
                 </h1>
                 <p className="text-xs sm:text-sm text-[#69736C] dark:text-[#B5BDB5] max-w-lg leading-relaxed pt-1 font-sans">
@@ -212,7 +212,7 @@ export default function HomePage() {
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-[#69736C] dark:text-[#B5BDB5] block mb-2.5">
                   Select Time Control
                 </span>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
+                <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5">
                   {TIME_CONTROLS.map((tc) => {
                     const isSelected = selectedTimeControl.id === tc.id;
                     return (
@@ -220,16 +220,16 @@ export default function HomePage() {
                         key={tc.id}
                         type="button"
                         onClick={() => setSelectedTimeControl(tc)}
-                        className={`flex flex-col items-center justify-center rounded-[12px] border py-3 px-2 text-center transition-all duration-150 cursor-pointer ${
+                        className={`flex flex-col items-center justify-center rounded-[12px] border py-2.5 sm:py-3 px-1 sm:px-2 text-center transition-all duration-150 cursor-pointer min-w-0 ${
                           isSelected
                             ? "border-[#B58A3A] bg-[#B58A3A]/12 text-[#18221E] dark:text-[#F4EFE3] dark:border-[#D3AA58] dark:bg-[#D3AA58]/15 shadow-[0_2px_8px_rgba(181,138,58,0.15)] font-semibold"
                             : "border-[rgba(24,34,30,0.1)] dark:border-[rgba(255,255,255,0.08)] bg-[#FBF9F3] dark:bg-[#21332B] text-[#69736C] dark:text-[#B5BDB5] hover:border-[rgba(24,34,30,0.2)] hover:bg-[#F7F4EC] dark:hover:bg-[#1B2A24] hover:text-[#18221E] dark:hover:text-[#F4EFE3]"
                         }`}
                       >
-                        <span className="text-[10px] font-medium uppercase tracking-wider">
+                        <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-tight sm:tracking-wider truncate w-full block">
                           {tc.name}
                         </span>
-                        <span className="font-mono text-base sm:text-lg font-bold text-[#18221E] dark:text-[#F4EFE3] mt-0.5">
+                        <span className="font-mono text-sm sm:text-base md:text-lg font-bold text-[#18221E] dark:text-[#F4EFE3] mt-0.5">
                           {tc.label}
                         </span>
                       </button>
@@ -260,7 +260,7 @@ export default function HomePage() {
 
               {/* Logged Out Callout */}
               {!user && !authLoading && (
-                <div className="flex items-center gap-3 pt-1 text-xs text-[#69736C] dark:text-[#B5BDB5]">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 text-xs text-[#69736C] dark:text-[#B5BDB5]">
                   <span>Playing as guest?</span>
                   <button
                     onClick={openLogin}
@@ -280,8 +280,8 @@ export default function HomePage() {
             </div>
 
             {/* Right: Board Centerpiece (Physical appearance with warm soft glow) */}
-            <div className="flex flex-col items-center justify-center">
-              <div className="relative w-full max-w-[420px] aspect-square rounded-[20px] p-2.5 bg-[#F7F4EC] dark:bg-[#21332B] border border-[rgba(24,34,30,0.1)] dark:border-[rgba(255,255,255,0.08)] shadow-[0_16px_50px_rgba(35,40,30,0.08)]">
+            <div className="flex flex-col items-center justify-center overflow-hidden">
+              <div className="relative w-full max-w-[min(420px,100%)] aspect-square rounded-[20px] p-2 sm:p-2.5 bg-[#F7F4EC] dark:bg-[#21332B] border border-[rgba(24,34,30,0.1)] dark:border-[rgba(255,255,255,0.08)] shadow-[0_16px_50px_rgba(35,40,30,0.08)] overflow-hidden">
                 {/* Subtle warm halo */}
                 <div className="absolute -inset-2 bg-gradient-to-tr from-[#B58A3A]/10 to-[#18352B]/10 rounded-[24px] blur-xl -z-10 pointer-events-none" />
                 <div className="w-full h-full rounded-[14px] overflow-hidden shadow-inner">
@@ -290,7 +290,7 @@ export default function HomePage() {
                   />
                 </div>
               </div>
-              <div className="w-full max-w-[420px] mt-3.5 flex items-center justify-between text-[11px] text-[#69736C] dark:text-[#B5BDB5] font-mono px-1">
+              <div className="w-full max-w-[min(420px,100%)] mt-3.5 flex items-center justify-between text-[11px] text-[#69736C] dark:text-[#B5BDB5] font-mono px-1">
                 <span>Wood & Ivory Classical Set</span>
                 <Link href="/puzzles" className="text-[#B58A3A] dark:text-[#D3AA58] hover:underline flex items-center gap-1 font-sans font-semibold">
                   <span>Solve Daily Tactics</span>

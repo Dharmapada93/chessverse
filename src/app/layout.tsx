@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className={`${inter.className} min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] antialiased selection:bg-[#B58A3A]/25 selection:text-[#18221E]`}>
+      <body className={`${inter.className} min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] antialiased selection:bg-[#B58A3A]/25 selection:text-[#18221E] overflow-x-hidden max-w-full w-full relative`}>
         <PremiumChessAtmosphere />
         <ErrorBoundary>
           <ClientProviders>
