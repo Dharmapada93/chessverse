@@ -15,7 +15,21 @@ export async function connectDatabase() {
   }
 
   // Strip accidental quotes or surrounding whitespace from environment variable
-  const mongoUri = rawUri.trim().replace(/^["']|["']$/g, "");
+  let mongoUri = rawUri.trim().replace(/^["']|["']$/g, "");
+
+  // Auto-encode special characters like '!' in password if present unencoded
+  const atIdx = mongoUri.indexOf("@");
+  const protocolIdx = mongoUri.indexOf("://");
+  if (protocolIdx !== -1 && atIdx !== -1) {
+    const userInfo = mongoUri.substring(protocolIdx + 3, atIdx);
+    const colonIdx = userInfo.indexOf(":");
+    if (colonIdx !== -1) {
+      const user = userInfo.substring(0, colonIdx);
+      const pass = userInfo.substring(colonIdx + 1);
+      const encodedPass = pass.replace(/!/g, "%21");
+      mongoUri = mongoUri.substring(0, protocolIdx + 3) + `${user}:${encodedPass}` + mongoUri.substring(atIdx);
+    }
+  }
 
   // In local development, fall back to public DNS if ISP blocks SRV queries
   if (process.env.NODE_ENV !== "production" && mongoUri.startsWith("mongodb+srv://")) {
