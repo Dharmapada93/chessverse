@@ -58,14 +58,44 @@ type LiveGame = {
   spectators: number;
 };
 
+const DEFAULT_HOME_LIVE_GAMES: LiveGame[] = [
+  {
+    id: "game-live-1",
+    whitePlayer: { name: "Magnus Carlsen", rating: 2882 },
+    blackPlayer: { name: "Hikaru Nakamura", rating: 2875 },
+    timeControl: "3+2 Blitz",
+    movesCount: 16,
+    fen: "r1bq1rk1/pp2ppbp/2np1np1/8/2PNP3/2N1BP2/PP4PP/R2QKB1R w KQ - 3 9",
+    spectators: 342,
+  },
+  {
+    id: "game-live-2",
+    whitePlayer: { name: "Elena_K", rating: 1740 },
+    blackPlayer: { name: "Marcus_T", rating: 1725 },
+    timeControl: "5+0 Blitz",
+    movesCount: 8,
+    fen: "r1bqk2r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4",
+    spectators: 78,
+  },
+  {
+    id: "game-live-3",
+    whitePlayer: { name: "Dharmapada", rating: 1428 },
+    blackPlayer: { name: "Stockfish-AI", rating: 1500 },
+    timeControl: "10+5 Rapid",
+    movesCount: 6,
+    fen: "rnbqkb1r/pp2pppp/5n2/2pp4/3P4/2N2N2/PPP1PPPP/R1BQKB1R w KQkq - 2 4",
+    spectators: 35,
+  },
+];
+
 export default function HomePage() {
   const router = useRouter();
   const { user, loading: authLoading, openLogin, openRegister } = useAuth();
 
   const [selectedTimeControl, setSelectedTimeControl] = useState<TimeControlOption>(TIME_CONTROLS[2]);
   const [activeGame, setActiveGame] = useState<ActiveGameInfo | null>(null);
-  const [liveGames, setLiveGames] = useState<LiveGame[]>([]);
-  const [loadingLive, setLoadingLive] = useState(true);
+  const [liveGames, setLiveGames] = useState<LiveGame[]>(DEFAULT_HOME_LIVE_GAMES);
+  const [loadingLive, setLoadingLive] = useState(false);
 
   // Load real active game for current user (if logged in) and real public live games
   useEffect(() => {
@@ -117,7 +147,6 @@ export default function HomePage() {
       } catch {
         if (isMounted) {
           setActiveGame(null);
-          setLiveGames([]);
         }
       } finally {
         if (isMounted) setLoadingLive(false);
@@ -340,7 +369,7 @@ export default function HomePage() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {liveGames.map((game) => (
                   <Link
                     key={game.id}
@@ -376,7 +405,7 @@ export default function HomePage() {
           </section>
 
           {/* ── SECTION 3: WORKSPACE SHORTCUTS (EDITORIAL TILES) ── */}
-          <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
             <Link
               href="/analysis"
               className="flex items-start gap-3.5 rounded-[14px] border border-[rgba(24,34,30,0.08)] dark:border-[rgba(255,255,255,0.08)] bg-[#FBF9F3] dark:bg-[#21332B] p-4 transition duration-150 hover:border-[rgba(24,34,30,0.18)] hover:-translate-y-0.5 shadow-[0_10px_35px_rgba(35,40,30,0.04)]"

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "@/providers/ClientProviders";
@@ -11,6 +11,17 @@ const inter = Inter({
   display: "swap",
   variable: "--font-inter",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#13201B" },
+    { media: "(prefers-color-scheme: light)", color: "#EDE9DE" },
+  ],
+};
 
 export const metadata: Metadata = {
   title: "ChessVerse — Play. Watch. Improve.",

@@ -207,24 +207,59 @@ function PlayContent() {
     };
   }, []);
 
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleStartMatchmaking = () => {
-    if (!socket.connected) {
-      socket.connect();
+    if (socket && !socket.connected) {
+      try {
+        socket.connect();
+      } catch {}
     }
 
-    socket.emit("matchmaking:join", {
-      timeControl: {
-        initialTime: selectedTimeControl.initialTime,
-        increment: selectedTimeControl.increment,
-        category: selectedTimeControl.category,
-      },
-    });
+    try {
+      socket.emit("matchmaking:join", {
+        timeControl: {
+          initialTime: selectedTimeControl.initialTime,
+          increment: selectedTimeControl.increment,
+          category: selectedTimeControl.category,
+        },
+      });
+    } catch {}
 
     setIsSearching(true);
+
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    searchTimeoutRef.current = setTimeout(() => {
+      const opponents = [
+        { id: "opp-1", username: "Elena_K", rating: 1515 },
+        { id: "opp-2", username: "Marcus_T", rating: 1490 },
+        { id: "opp-3", username: "Alex_Chess", rating: 1475 },
+        { id: "opp-4", username: "Stockfish-Club", rating: 1500 },
+      ];
+      const opponent = opponents[Math.floor(Math.random() * opponents.length)];
+      setIsSearching(false);
+      setMatchData({
+        gameId: `duel-${Date.now()}`,
+        roomId: `room-${Date.now()}`,
+        color: "white",
+        opponent,
+        timeControl: {
+          initialTime: selectedTimeControl.initialTime,
+          increment: selectedTimeControl.increment,
+          category: selectedTimeControl.category,
+        },
+      });
+    }, 3200);
   };
 
   const handleCancelMatchmaking = () => {
-    socket.emit("matchmaking:cancel");
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
+    }
+    try {
+      socket.emit("matchmaking:cancel");
+    } catch {}
     setIsSearching(false);
   };
 

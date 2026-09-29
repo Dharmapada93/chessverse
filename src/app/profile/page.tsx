@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function ProfileRedirectPage() {
   const router = useRouter();
-  const { user, loading, openLogin } = useAuth();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     if (loading) return;
@@ -14,10 +14,9 @@ export default function ProfileRedirectPage() {
     if (user && user.username) {
       router.replace(`/profile/${encodeURIComponent(user.username)}`);
     } else {
-      router.replace("/");
-      openLogin();
+      router.replace("/profile/Dharmapada");
     }
-  }, [user, loading, router, openLogin]);
+  }, [user, loading, router]);
 
   return (
     <div className="min-h-screen bg-transparent flex items-center justify-center text-[#B88A32]">

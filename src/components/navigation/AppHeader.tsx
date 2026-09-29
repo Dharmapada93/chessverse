@@ -47,7 +47,7 @@ export default function AppHeader() {
   const greeting = currentHour < 12 ? "Good morning" : currentHour < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 sm:h-16 w-full max-w-full items-center justify-between border-b border-[var(--color-border-subtle)] bg-[#EDE9DE]/92 dark:bg-[#13201B]/92 px-3 sm:px-6 lg:px-8 backdrop-blur-md overflow-hidden">
+    <header className="sticky top-0 z-30 flex h-14 sm:h-16 w-full max-w-full items-center justify-between border-b border-[var(--color-border-subtle)] bg-[#EDE9DE]/95 dark:bg-[#13201B]/95 px-3 sm:px-6 lg:px-8 backdrop-blur-md">
       {/* Left: Contextual Section Title & Subtitle */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
         <div>
