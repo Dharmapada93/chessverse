@@ -215,8 +215,7 @@ router.post("/:id/check", async (req, res) => {
       const authHeader = req.headers.authorization;
       if (authHeader && authHeader.startsWith("Bearer ")) {
         const token = authHeader.substring(7);
-        const secret = process.env.JWT_SECRET;
-        if (!secret) throw new Error("JWT_SECRET is not configured");
+        const secret = process.env.JWT_SECRET || "change-this-to-a-long-random-secret-key";
         try {
           const payload = jwt.verify(token, secret) as { userId?: string };
           if (payload?.userId) {

@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { registerUser } from "@/lib/server-store";
+import { getDemoToken } from "@/lib/server-store";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const username = body.username || "Player";
-    const email = body.email || `${username.toLowerCase()}@chessverse.com`;
-    const password = body.password || "password";
+    let username = "Dharmapada";
+    try {
+      const body = await request.json();
+      if (body?.username) username = body.username;
+    } catch {}
 
-    const { user, token } = registerUser(username, email, password);
+    const { user, token } = getDemoToken(username);
 
     const response = NextResponse.json({
       success: true,
@@ -36,8 +37,8 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (err: any) {
     return NextResponse.json(
-      { success: false, message: err?.message || "Registration failed" },
-      { status: 400 }
+      { success: false, message: err?.message || "Demo auth failed" },
+      { status: 500 }
     );
   }
 }

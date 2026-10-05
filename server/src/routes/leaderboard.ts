@@ -11,8 +11,7 @@ function getOptionalUserId(req: Request): string | null {
   const header = req.headers.authorization;
   if (!header || !header.startsWith("Bearer ")) return null;
   const token = header.substring(7);
-  const secret = process.env.JWT_SECRET;
-  if (!secret) throw new Error("JWT_SECRET is not configured");
+  const secret = process.env.JWT_SECRET || "change-this-to-a-long-random-secret-key";
   try {
     const payload = jwt.verify(token, secret) as { userId?: string };
     return payload?.userId || null;
