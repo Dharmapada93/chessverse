@@ -66,7 +66,7 @@ export function verifyOriginCsrf(req: Request, res: Response, next: NextFunction
 
   // Exempt public webhook or unauthenticated login/register routes if necessary
   const path = req.path;
-  if (path === "/api/auth/login" || path === "/api/auth/register" || path === "/api/auth/forgot-password" || path === "/api/auth/demo") {
+  if (path === "/api/auth/login" || path === "/api/auth/register" || path === "/api/auth/forgot-password") {
     return next();
   }
 

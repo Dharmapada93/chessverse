@@ -3,7 +3,7 @@ import dns from "node:dns";
 import { logger } from "../utils/logger.js";
 
 export async function connectDatabase() {
-  const rawUri = process.env.DATABASE_URL || process.env.MONGODB_URI;
+  const rawUri = process.env.MONGODB_URI || process.env.DATABASE_URL;
 
   if (!rawUri) {
     logger.error("database_config_missing", {

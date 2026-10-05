@@ -1,4 +1,6 @@
 import { Chess } from "chess.js";
+import bcrypt from "bcryptjs";
+import crypto from "node:crypto";
 
 export interface StoredUser {
   id: string;
@@ -238,12 +240,6 @@ export const LIVE_GAMES_POOL: StoredLiveGame[] = [
 
 export function findUserByToken(token: string | null): StoredUser | null {
   if (!token) return null;
-  // Format could be demo token, synthetic jwt or stored token
-  if (token.startsWith("demo-token-")) {
-    const username = token.replace("demo-token-", "").toLowerCase();
-    return USERS_MAP.get(username) || USERS_MAP.get("dharmapada") || null;
-  }
-
   const userId = TOKENS_MAP.get(token);
   if (userId && USERS_MAP.has(userId)) {
     return USERS_MAP.get(userId)!;
@@ -263,8 +259,7 @@ export function findUserByToken(token: string | null): StoredUser | null {
     }
   } catch {}
 
-  // Default to Dharmapada for seamless experience if valid token string exists
-  return USERS_MAP.get("dharmapada") || null;
+  return null;
 }
 
 export function findUserByUsername(username: string): StoredUser | null {
@@ -300,13 +295,13 @@ export function findUserByUsername(username: string): StoredUser | null {
   return newUser;
 }
 
-export function registerUser(username: string, email: string, _password: string): { user: StoredUser; token: string } {
+export async function registerUser(username: string, email: string, password: string): Promise<{ user: StoredUser; token: string } | null> {
   const clean = username.trim();
-  const existing = USERS_MAP.get(clean.toLowerCase());
+  const existing = USERS_MAP.get(clean.toLowerCase()) || Array.from(USERS_MAP.values()).find(
+    (candidate) => candidate.email.toLowerCase() === email.trim().toLowerCase(),
+  );
   if (existing) {
-    const token = `token-${existing.id}-${Date.now()}`;
-    TOKENS_MAP.set(token, existing.id);
-    return { user: existing, token };
+    return null;
   }
 
   const user: StoredUser = {
@@ -335,13 +330,14 @@ export function registerUser(username: string, email: string, _password: string)
   USERS_MAP.set(user.id, user);
   USERS_MAP.set(clean.toLowerCase(), user);
 
-  const token = `token-${user.id}-${Date.now()}`;
+  user.passwordHash = await bcrypt.hash(password, 12);
+  const token = crypto.randomUUID();
   TOKENS_MAP.set(token, user.id);
 
   return { user, token };
 }
 
-export function loginUser(identifier: string, _password: string): { user: StoredUser; token: string } {
+export async function loginUser(identifier: string, password: string): Promise<{ user: StoredUser; token: string } | null> {
   const clean = identifier.trim().toLowerCase();
   let user: StoredUser | undefined;
 
@@ -352,22 +348,13 @@ export function loginUser(identifier: string, _password: string): { user: Stored
     }
   }
 
-  if (!user) {
-    // If not found, automatically register them smoothly so login NEVER frustrates the user!
-    const result = registerUser(clean.includes("@") ? clean.split("@")[0] : clean, `${clean}@chessverse.com`, "password");
-    user = result.user;
+  if (!user || !user.passwordHash || !(await bcrypt.compare(password, user.passwordHash))) {
+    return null;
   }
 
-  const token = `token-${user.id}-${Date.now()}`;
+  const token = crypto.randomUUID();
   TOKENS_MAP.set(token, user.id);
 
-  return { user, token };
-}
-
-export function getDemoToken(username = "Dharmapada"): { user: StoredUser; token: string } {
-  const user = findUserByUsername(username) || USERS_MAP.get("dharmapada")!;
-  const token = `demo-token-${user.username.toLowerCase()}`;
-  TOKENS_MAP.set(token, user.id);
   return { user, token };
 }
 

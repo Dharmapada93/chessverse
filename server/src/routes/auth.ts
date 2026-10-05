@@ -90,7 +90,8 @@ async function createSecureSession(req: any, res: any, user: any) {
     30 * 24 * 60 * 60,
   );
 
-  const secret = process.env.JWT_SECRET || "change-this-to-a-long-random-secret-key";
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET is not configured");
   const token = jwt.sign(
     {
       userId: user._id.toString(),

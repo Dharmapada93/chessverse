@@ -36,7 +36,7 @@ export async function GET(
     game: {
       id: gameId,
       roomId: gameId,
-      whitePlayer: { id: "user-dharmapada", name: "Dharmapada", rating: 1428 },
+      whitePlayer: { id: "p1", name: "White Player", rating: 1500 },
       blackPlayer: { id: "bot-grandmaster", name: "Grandmaster AI", rating: 1500 },
       fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
       moves: [],
